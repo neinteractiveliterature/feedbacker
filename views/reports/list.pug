@@ -1,0 +1,58 @@
+extends ../layout
+
+block content
+    .row
+        .col-md-2
+            button.btn.btn-outline-primary.btn-sm#exportCSV
+                i.fa.fa-download
+                |  Download CSV
+
+    .table-responsive
+        table.table.table-sm.table-hover.table-sorted(data-order='[[ 2, "asc" ]]')
+            thead
+                tr
+                    th(style='min-width:120px') Type
+                    th Event
+                    th(style='min-width:115px') Run
+                    th(style='min-width:120px') Room(s)
+                    th(style='min-width:120px') Modified
+                    th(style='min-width:132px') Request Entered
+            tbody
+                for run in runs
+                    if (run.event.category !== 'Volunteer event')
+                        tr(
+                            data-click-object='requests'
+                            data-click-id=run.event.id+'/'+run.id
+                            class= (run.no_furniture || run.requests.length)?'table-success':'table-danger'
+                        )
+                            td
+                                small= humanize(run.event.category)
+                            td= run.event.title
+                            td(data-order=moment(run.starts_at).format(YYYYMMDDHHmmss))= moment(run.starts_at).format('ddd, h:mm A')
+                            td
+                                small= _.pluck(run.rooms, 'name').join(', ')
+                            td(data-order=moment(run.modified).format(YYYYMMDDHHmmss))
+                                if (run.modified)
+                                    small= moment(run.modified).format('YYYY-MM-DD h:mm A')
+                            td= (run.no_furniture || run.requests.length)?'Yes':'No'
+                                if (checkPermission({permission: 'gm_liaison', eventId: run.event.id}))
+                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
+                                        i.fa.fa-edit
+                                        |  Edit
+                                else if(run.no_furniture || run.requests.length)
+                                    a.btn.btn-sm.btn-outline-primary.mx-3.float-right(href='/requests/'+run.event.id+'/'+run.id + '?backto=list')
+                                        i.fa.fa-eye
+                                        |  View
+            tfoot
+                if (runs.length > 10)
+                    tr
+                        th Type
+                        th Event
+                        th Run
+                        th Room(s)
+                        th Modified
+                        th Request Entered
+
+
+append scripts
+    script(src='/javascripts/data-table.js')

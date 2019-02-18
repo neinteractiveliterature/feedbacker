@@ -1,0 +1,19 @@
+extends ../layout
+
+block content
+    ul.list-group.col-sm-4
+        a.list-group-item(href='/reports/list')
+            i.fa.fa-list
+            |  Runs List
+        a.list-group-item(href='/reports/room')
+            i.fa.fa-home
+            |  Room Report
+        a.list-group-item(href='/reports/furniture')
+            i.fa.fa-cubes
+            |  Furniture Report
+        a.list-group-item(href='/reports/food')
+            i.fa.fa-cutlery
+            |  Food Report
+        a.list-group-item(href='/reports/special')
+            i.fa.fa-tree
+            |  Special Requests
