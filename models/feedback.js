@@ -37,8 +37,8 @@ exports.create = function(data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'insert into feedback (response_id, event_id, concom, gm, recommend) values ($1, $2, $3, $4, $5) returning id';
-    var dataArr = [data.response_id, data.event_id, data.concom, data.gm, data.recommend];
+    var query = 'insert into feedback (response_id, event_id, concom, gm, recommend, skipped) values ($1, $2, $3, $4, $5, $6) returning id';
+    var dataArr = [data.response_id, data.event_id, data.concom, data.gm, data.recommend, data.skipped];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows[0].id);
@@ -52,8 +52,8 @@ exports.update =  function(id, data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'update feed set concom = $2, gm = $3, recommend = $4 where id = $1';
-    var dataArr = [id, data.concom, data.gm, data.recommend];
+    var query = 'update feed set concom = $2, gm = $3, recommend = $4, skipped = $5 where id = $1';
+    var dataArr = [id, data.concom, data.gm, data.recommend, data.skipped];
 
     database.query(query, dataArr, cb);
 };

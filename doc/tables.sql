@@ -19,9 +19,10 @@ create table users (
 create table surveys (
     id          serial,
     name        varchar(80) not null,
-    created_by  id,
+    created_by  int not null,
     created     timestamp default now(),
-    primary key(id);
+    published   boolean default false,
+    primary key (id)
 );
 
 CREATE TRIGGER update_surveys_created BEFORE UPDATE
@@ -31,7 +32,7 @@ CREATE TRIGGER update_surveys_created BEFORE UPDATE
 create table questions (
     id          serial,
     survey_id   int not null,
-    question    varchar(255) not null
+    question    varchar(255) not null,
     description text,
     type        varchar(20),
     display_order int not null,
@@ -47,6 +48,8 @@ create table responses (
     survey_id   int not null,
     user_id     int not null,
     anonymous   boolean default false not null,
+    complete    boolean default false not null,
+    tag         varchar(30),
     created     timestamp default now(),
     updated     timestamp default now(),
     primary key(id),
@@ -69,7 +72,8 @@ create table feedback (
     concom      text,
     gm          text,
     recommend   int,
-    created     timestamp default now();
+    skipped     boolean default false,
+    created     timestamp default now(),
     primary key (id),
     foreign key (response_id)
         references responses(id)
@@ -89,7 +93,7 @@ create table question_responses (
     primary key (id),
     foreign key (question_id)
         references questions(id)
-        on delete cascade
+        on delete cascade,
     foreign key (response_id)
         references responses(id)
         on delete cascade

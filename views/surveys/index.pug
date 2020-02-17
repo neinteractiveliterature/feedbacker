@@ -1,0 +1,31 @@
+extends ../layout
+
+block content
+    if (checkPermission('staff'))
+        a.btn.btn-success.mb-2( href='/surveys/new')
+            span.fa.fa-plus
+            |  New Survey
+    .table-responsive
+        table.table.table-sm.table-hover.table-striped
+            thead
+                th Survey
+                th Status
+                th Actions
+            tbody#furnitureList
+            for survey in surveys
+                if (survey.published || survey.created_by === activeUser.id || checkPermission('staff'))
+                    tr
+                        td= survey.name
+                        td= survey.published ? 'Active' : 'Unpublished'
+                        td
+                            if (survey.created_by === activeUser.id || checkPermission('staff'))
+                                a.btn.btn-sm.btn-outline-secondary.mx-3(href='/surveys/'+survey.id+'/edit') Edit
+                            if (survey.published)
+                                if (response)
+                                    if (! response.completed)
+                                        a.btn.btn-sm.btn-outline-primary.mx-3(href='/surveys/'+survey.id) Continue
+                                else
+                                    a.btn.btn-sm.btn-outline-primary.mx-3(href='/surveys/'+survey.id) Answer
+
+
+

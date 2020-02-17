@@ -5,7 +5,7 @@ const _ = require('underscore');
 const permission = require('../lib/permission');
 
 function index(req, res, next){
-    res.redirect('/requests');
+    res.redirect('/surveys');
 }
 
 function logout(req, res, next){

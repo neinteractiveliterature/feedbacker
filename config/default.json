@@ -1,10 +1,10 @@
 {
     "app": {
-        "name": "Intercon Furniture Request System",
+        "name": "Intercon Survey System",
         "debug": false,
-        "dbURL": "postgres://furniture:furniture@localhost:5432/furniture",
+        "dbURL": "postgres://feedbacker:feedbacker@localhost:5432/feedbacker",
         "sessionType": "local",
-        "sessionSecret": "furniture",
+        "sessionSecret": "surveys",
         "graphqlURL": "graphqlURL",
         "interconBaseURL": "interconBaseURL",
         "redisURL": false

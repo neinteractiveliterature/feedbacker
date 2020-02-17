@@ -1,0 +1,115 @@
+extends ../layout
+
+block content
+    form.form.needs-validation.my-3(method="POST" action="/surveys/"+survey.id novalidate)
+        input(type="hidden", name="_method",  value="PUT")
+        input(type="hidden", name='_csrf',value=csrfToken)
+
+        for question in survey.questions
+            .form-group
+                case question.type
+                    when 'shorttext'
+                        label.control-label(for="question-" + question.id)=question.question
+                        if question.description
+                            small.form-text.text-muted=question.description
+                        input.form-control(
+                            type="text"
+                            name="response[responses]["+question.id+"]"
+                            value=getValue(question.id)
+                            id='question-' + question.id,
+                            required=question.required
+                            )
+                        div.invalid-feedback Please choose a valid value for this item
+
+                    when 'text'
+                        label.control-label(for="question-" + question.id)=question.question
+                        if question.description
+                            small.form-text.text-muted=question.description
+                        textarea.form-control(
+                            name="response[responses]["+question.id+"]"
+                            id='question-' + question.id
+                            required=question.required
+                            )
+                            = getValue(question.id)
+
+                    when 'boolean'
+                        <!-- Default checked -->
+                        .custom-control.custom-switch
+                            input.custom-control-input(
+                                type="checkbox"
+                                name="response[responses]["+question.id+"]"
+                                checked=getValue(question.id)
+                                id='question-' + question.id
+                                )
+                            label.custom-control-label(for="question-" + question.id)=question.question
+                            if question.description
+                                small.form-text.text-muted=question.description
+                    when 'scale'
+                        label.control-label(for="question-" + question.id)=question.question
+                        select.form-control(
+                            name="response[responses]["+question.id+"]"
+                            id='question-' + question.id
+                            required=question.required
+                            )
+                            option(value="" selected = getValue(question.id)===null disabled) Please select a response
+                            option(value=1 selected = getValue(question.id)===1) Strong Negative (1)
+                            option(value=2 selected = getValue(question.id)===2) Negative (2)
+                            option(value=3 selected = getValue(question.id)===3) Neutral (3)
+                            option(value=4 selected = getValue(question.id)===4) Positive (4)
+                            option(value=5 selected = getValue(question.id)===5) Strongly Positive (5)
+                    when 'events'
+                        .table-responsive
+                            table.table.table-sm.table-striped
+                                thead
+                                    th Category
+                                    th Event Name
+                                    th Actions
+                                tbody
+                                    for eventId in userEvents
+                                        - var event = events[eventId]
+                                        - var feedback = _.findWhere(response.feedback, {event_id: Number(event.id)})
+                                        - console.log(feedback)
+                                        tr(class=feedback ? 'table-success' : 'table-warning')
+                                            td
+                                                small= event.event_category.name
+                                            td= event.title
+                                            td(style='min-width:250px')
+                                                a.btn.btn-sm.btn-outline-danger.mx-3(href='/feedback/remove?event_id='+event.id) Remove
+                                                if (feedback)
+                                                    a.btn.btn-sm.btn-outline-primary.mx-3(href='/feedback/'+feedback.id) Edit Feedback
+                                                else
+                                                    a.btn.btn-sm.btn-outline-primary.mx-3(href='/feedback/new?event_id='+eventId) Provide Feedback
+                                tfoot
+                                    tr
+                                        td(colspan=2)
+                                            select.form-control#addEvent
+                                                for event in events
+                                                    option(value=event.id)= event.event_category.name + ': '+ event.title
+
+                                        td
+                                            a.btn.btn-success.mb-2#addEventBtn( href='#')
+                                                span.fa.fa-plus
+                                                |  Add Event
+
+
+        form-group
+            button.btn.btn-secondary.mxr-3(type="submit" value='save') Save Progress
+            button.btn.btn-primary.mx-3(type="submit" value='submit') Submit Survey
+            a.btn.btn-link.mx-3(href="/") Cancel
+
+    .card
+        .card-body
+            pre=JSON.stringify(survey, null, 2)
+    .card
+        .card-body
+            pre=JSON.stringify(response, null, 2)
+    .card
+        .card-body
+            pre=JSON.stringify(userEvents, null, 2)
+    .card
+        .card-body
+            pre=JSON.stringify(events, null, 2)
+append scripts
+    script(src='/javascripts/validator.js')
+    script(src='/javascripts/requests.js')
+

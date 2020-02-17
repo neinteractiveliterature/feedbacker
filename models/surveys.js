@@ -29,8 +29,8 @@ exports.create = function(data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'insert into surveys (name, created_by) values ($1, $2) returning id';
-    var dataArr = [data.name, data.created_by];
+    var query = 'insert into surveys (name, created_by, published) values ($1, $2, $3) returning id';
+    var dataArr = [data.name, data.created_by, data.published];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows[0].id);
@@ -44,8 +44,8 @@ exports.update =  function(id, data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'update surveys set name = $2 where id = $1';
-    var dataArr = [id, data.name];
+    var query = 'update surveys set name = $2, published = $3 where id = $1';
+    var dataArr = [id, data.name, data.published];
 
     database.query(query, dataArr, cb);
 };

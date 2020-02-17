@@ -19,13 +19,12 @@ var models = require('./lib/models');
 var Intercode = require('./lib/intercode');
 var permission = require('./lib/permission');
 
-var furnitureHelper = require('./lib/furniture-helper');
+var surveyHelper = require('./lib/survey-helper');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var requestsRouter = require('./routes/requests');
-var furnitureRouter = require('./routes/furniture');
-var reportsRouter = require('./routes/reports');
+var surveysRouter = require('./routes/surveys');
+//var reportsRouter = require('./routes/reports');
 
 var app = express();
 
@@ -149,8 +148,8 @@ app.use(function(req, res, next){
     res.locals.title = config.get('app.name');
     res.locals._ = _;
     res.locals.moment = moment;
-    res.locals.humanize = furnitureHelper.humanize;
-    res.locals.teamMembers = furnitureHelper.teamMembers;
+    res.locals.humanize = surveyHelper.humanize;
+    res.locals.teamMembers = surveyHelper.teamMembers;
     res.locals.activeUser = req.user;
     next();
 });
@@ -159,9 +158,8 @@ app.use(permission());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/requests', requestsRouter);
-app.use('/furniture', furnitureRouter);
-app.use('/reports', reportsRouter);
+app.use('/surveys', surveysRouter);
+//app.use('/reports', reportsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
