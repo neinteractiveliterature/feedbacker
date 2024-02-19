@@ -7,97 +7,84 @@ const permission = require('../lib/permission');
 const shortid = require('shortid');
 
 
-function list(req, res, next){
+async function list(req, res, next){
     res.locals.breadcrumbs = {
         path: [
             { url: '/', name: 'Home'},
         ],
         current: 'Surveys'
     };
-    req.models.surveys.list(function(err, surveys){
-        if (err) { return next(err); }
-        async.map(surveys, function(survey, cb){
-            req.models.responses.find({survey_id: survey.id, user_id: req.user.id}, function(err, response){
-                if (err) { return cb(err); }
-                survey.response = response;
-                cb(null, survey);
-            });
-        }, function(err, surveys){
-            if (err) { return next(err); }
-            res.locals.surveys = surveys || [];
-            res.render('surveys/index', { pageTitle: 'Surveys' });
+    try {
+        const surveys = await req.models.survey.find({});
+        res.locals.surveys = await async.map(surveys, async function(survey, cb){
+            survey.response = await req.models.response.find({survey_id: survey.id, user_id: req.user.id});
+            return survey;
         });
-    });
+        res.render('surveys/index', { pageTitle: 'Surveys' });
+    } catch (err){
+        next(err);
+    }
 }
 
-function show(req, res, next){
-    const survey_id = req.params.id;
-    async.parallel({
-        survey: function(cb){
-            surveyHelper.getSurvey(survey_id, cb);
-        },
-        response: function(cb){
-            req.models.responses.find({survey_id: survey_id, user_id: req.user.id}, function(err, response){
-                if (err) { return cb(err); }
-                if (response) {
-                    return surveyHelper.getResponse(response.id, cb);
-                }
-                response = {
-                    survey_id: survey_id,
-                    user_id: req.user.id,
-                    anonymous: false,
-                    complete: false,
-                    tag: shortid.generate()
-                };
-                req.models.responses.create(response, function(err, response_id){
-                    if (err) { return cb(err); }
-                    surveyHelper.getResponse(response_id, cb);
-                });
-            });
-        },
-        userEvents: function(cb){
-            req.intercode.getSignups(req.user.intercode_id, function(err, signups){
-                if (err) { return cb(err); }
-                const events = {};
-                signups.forEach(function(signup){
-                    if (signup.state != 'withdrawn'){
-                        events[signup.run.event.id] = 1;
-                    }
-                });
-                cb(null, events);
-            });
-        },
-        events: function(cb){
-            req.intercode.getEvents(cb);
+async function show(req, res, next){
+    const surveyId = req.params.id;
+
+    try {
+        res.locals.survey = await surveyHelper.getSurvey(surveyId);
+        const responseRow = await req.models.response.findOne({survey_id: surveyId, user_id: req.user.id});
+
+        let response = null;
+        if (responseRow){
+            response = await surveyHelper.getResponse(responseRow.id);
+        } else {
+            const responseData = {
+                survey_id: surveyId,
+                user_id: req.user.id,
+                anonymous: false,
+                complete: false,
+                tag: shortid.generate()
+            };
+            const responseId = req.models.response.create(responseData);
+            response = await surveyHelper.getResponse(responseId);
         }
-    }, function(err, result){
-        if (err) { return next(err); }
-        res.locals.survey = result.survey;
-        res.locals.response = result.response;
-        res.locals.events = _.indexBy(result.events, 'id');
+        res.locals.response = response;
+
+        const events = (await req.intercode.getEvents()).filter(event => {
+            if (event.event_category.name === 'Volunteer event') { return false; }
+            if (event.event_category.name === 'Con services') { return false; }
+            return true;
+        })
+        res.locals.events = _.indexBy(events, 'id');
+
+        let signups = await req.intercode.getSignups(req.user.intercode_id);
+        let userEvents = signups
+            .filter(signup => {return signup.state !== 'withdrawn';})
+            .map(signup => { return Number(signup.run.event.id);});
 
         res.locals.getValue = function(question_id){
-            if (_.has(result.response.responses, question_id)){
-                return result.response.responses[question_id].value
+            if (_.has(response.responses, question_id)){
+                return response.responses[question_id].value;
             } else {
                 return null;
             }
         };
 
-        var userEvents = result.userEvents;
-        if (result.response.feedback){
-            result.response.feedback.forEach(function(event){
+        if (response.feedback){
+            response.feedback.forEach(function(event){
                 if (event.skipped){
-                    delete userEvents[event.event_id];
+                    userEvents = _.without(userEvents, event.event_id);
                 } else {
-                    userEvents[event.event_id] = 1;
+                    userEvents.push(event.event_id);
                 }
             });
         }
-        res.locals.userEvents = _.keys(userEvents);
+        console.log(userEvents)
+        res.locals.userEvents = userEvents;
 
-        res.render('surveys/show', { pageTitle: result.survey.name });
-    });
+        res.render('surveys/show', { pageTitle: res.locals.survey.name });
+    } catch(err){
+        next(err);
+    }
 }
 
 function showNew(req, res, next){

@@ -1,0 +1,30 @@
+.container
+
+    a.navbar-brand(href='/') NEIL Surveys
+    button.navbar-toggler(type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation")
+        span.navbar-toggler-icon
+
+    .collapse.navbar-collapse#navbar
+        ul.navbar-nav.me-auto
+            li.nav-item(class= siteSection==='home'?"active":null)
+                a.nav-link(href="/") Home
+                    span.visually-hidden (current)
+
+
+        ul.navbar-nav.float-right
+            - if (activeUser)
+                li.nav-item.dropdown
+                    a.nav-link.dropdown-toggle#userDropdown(
+                        href='#'
+                        role='button'
+                        data-toggle='dropdown'
+                        aria-haspopup="true"
+                        aria-expanded="false")
+                        span.fa.fa-user
+                        |  #{activeUser.name}
+                    .dropdown-menu(aria-labelledby="userDropdown")
+                        a.dropdown-item(href='/logout') Logout
+
+            - else
+                li.nav-item
+                    a.nav-link(href='/login') Login

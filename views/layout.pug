@@ -1,78 +1,22 @@
 doctype html
 html(lang="en")
-    head
-        meta(charset="UTF-8")
-        meta(http-equiv="X-UA-Compatible", content="IE=edge")
-        meta(name="viewport",content="width=device-width, initial-scale=1 shrink-to-fit=no")
-        meta(name="description",content="Survey system for intercode2-based conventions")
-        meta(name="author",content="Dave Kapell")
-        link(rel="icon",href="/images/neilSquare.png")
-        title= title
-        block styles
-            link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous")
-            link(rel='stylesheet' href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,700i|Montserrat:400,700")
-            link(href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css", rel="stylesheet", integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN", crossorigin="anonymous")
-            link(rel='stylesheet' href='https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.css')
-            link(rel='stylesheet',href='/stylesheets/style.css')
+    include ./partials/layout/head
 
-    body
-        nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top.s-menubar.mb-4.fh-fixedHeader
-            .container
+    body(style= activeUser ? 'padding-top: 5.5rem;': '' )
+        if (activeUser)
+            nav.navbar.navbar-expand-md.bg-primary.fixed-top.mb-4.navbar-dark
+                include ./partials/layout/menu
+        else
+            include ./partials/layout/mini_menu
 
-                a.navbar-brand(href='/') NEIL Surveys
-                button.navbar-toggler(type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation")
-                    span.navbar-toggler-icon
+        if breadcrumbs
+            if wideMain
+                .container-fluid
+                    include ./partials/layout/breadcrumbs
+            else
+                .container
+                    include ./partials/layout/breadcrumbs
 
-                .collapse.navbar-collapse#navbar
-                    ul.navbar-nav.mr-auto
-                        li.nav-item(class= siteSection==='requests'?"active":null)
-                            a.nav-link(href="/") Home
-                                span.sr-only (current)
-                        - if (checkPermission('gm_liaison'))
-                            li.nav-item(class= siteSection==='furniture'?"active":null)
-                                a.nav-link(href='/furniture') Furniture
-                        - if (checkPermission('con_com'))
-                            li.nav-item.dropdown(class= siteSection==='reports'?"active":null)
-                                a.nav-link.dropdown-toggle#reportsDropdown(
-                                    href='#'
-                                    role='button'
-                                    data-toggle='dropdown'
-                                    aria-haspopup="true"
-                                    aria-expanded="false") Reports
-                                .dropdown-menu(aria-labelledby="reportsDropdown")
-                                    a.dropdown-item(href='/reports/list') Runs List
-                                    a.dropdown-item(href='/reports/rooms') Rooms Report
-                                    a.dropdown-item(href='/reports/furniture') Furniture Report
-                                    a.dropdown-item(href='/reports/food') Food Report
-                                    a.dropdown-item(href='/reports/special') Special Requests
-
-
-                    ul.navbar-nav.float-right
-                        - if (activeUser)
-
-                            li.nav-item.dropdown
-                                a.nav-link.dropdown-toggle#userDropdown(
-                                    href='#'
-                                    role='button'
-                                    data-toggle='dropdown'
-                                    aria-haspopup="true"
-                                    aria-expanded="false")
-                                    span.fa.fa-user
-                                    |  #{activeUser.name}
-                                .dropdown-menu(aria-labelledby="userDropdown")
-                                    a.dropdown-item(href='/logout') Logout
-
-                        - else
-                            li.nav-item
-                                a.nav-link(href='/login') Login
-        - if(breadcrumbs)
-            .container(role="breadcrumbs")
-                nav(aria-label='breadcrumb')
-                    ol.breadcrumb
-                        for breadcrumb in breadcrumbs.path
-                            li.breadcrumb-item
-                                a(href=breadcrumb.url)= breadcrumb.name
-                        li.breadcrumb-item.active(aria-current="page")= breadcrumbs.current
         if (pageTitle)
             .container(role="page_title")
                 if (typeof pageTitle === 'string')
@@ -87,38 +31,16 @@ html(lang="en")
                     if (pageTitle.h4)
                         h4=pageTitle.h4
 
+        include ./partials/layout/messages
 
+        if wideMain
+            main.container-fluid(role="main")
+                block content
+        else if fullHeightMain
+            main.container.h-100(role="main")
+                block content
+        else
+            main.container(role="main")
+                block content
 
-        .container(role="messages")
-            - if (messages.error)
-                div.alert.alert-danger(role='alert')
-                    = messages.error.join(', ')
-
-            - if (messages.info)
-                div.alert.alert-info(role='alert')
-                    = messages.info.join(', ')
-
-            - if (messages.success)
-                div.alert.alert-success(role='alert')
-                    = messages.success.join(', ')
-
-        main.container(role="main")
-            block content
-
-        block scripts
-            script(src="https://code.jquery.com/jquery-3.3.1.min.js"
-                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-                crossorigin="anonymous")
-            script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-                integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-                crossorigin="anonymous")
-            script(src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-                crossorigin="anonymous")
-            script(src='https://code.jquery.com/ui/1.12.1/jquery-ui.min.js'
-                integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-                crossorigin="anonymous")
-            script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.1/js/jquery.tablesorter.min.js")
-            script(src='https://cdn.datatables.net/v/bs4/dt-1.10.18/fh-3.1.4/datatables.min.js')
-
-
+        include ./partials/layout/footer

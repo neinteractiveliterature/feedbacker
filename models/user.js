@@ -1,99 +1,128 @@
 'use strict';
-var async = require('async');
-var _ = require('underscore');
-var database = require('../lib/database');
-var validator = require('validator');
-
-var models = {
+const async = require('async');
+const _ = require('underscore');
+const database = require('../lib/database');
+const validator = require('validator');
+const cache = require('../lib/cache');
+const models = {
 };
 
-exports.get = function(id, cb){
-    var query = 'select * from users where id = $1';
-    database.query(query, [id], function(err, result){
-        if (err) { return cb(err); }
-        if (result.rows.length){
-            return cb(null, result.rows[0]);
-        }
-        return cb();
-    });
-};
+const tableFields = ['name', 'email', 'intercode_id'];
 
-exports.getByEmail = function(text, cb){
-    var query = 'select * from users where email = $1';
-    database.query(query, [text], function(err, result){
-        if (err) { return cb(err); }
-        if (result.rows.length){
-            return cb(null, result.rows[0]);
-        }
-        return cb();
-    });
-};
-exports.getByIntercodeId = function(text, cb){
-    var query = 'select * from users where intercode_id = $1';
-    database.query(query, [text], function(err, result){
-        if (err) { return cb(err); }
-        if (result.rows.length){
-            return cb(null, result.rows[0]);
-        }
-        return cb();
-    });
-};
+exports.get = async function(id){
+    if (!id){ throw new Error('no id specified'); }
+    let user = await cache.check('user', id);
 
-exports.list = function(cb){
-    var query = 'select * from users order by name';
-    database.query(query, function(err, result){
-        if (err) { return cb(err); }
-        return cb(null, result.rows);
-    });
-};
+    const query = 'select * from users where id = $1';
+    const result = await database.query(query, [id]);
+    if (result.rows.length){
+        user = result.rows[0];
+        await cache.store('user', id, user);
 
-exports.create = function(data, cb){
-    if (! validate(data)){
-        return process.nextTick(function(){
-            cb('Invalid Data');
-        });
+        return user;
     }
-    var query = 'insert into users (name, email, intercode_id) values ($1, $2, $3) returning id';
-    var dataArr = [data.name, data.email, data.intercode_id];
-    database.query(query, dataArr, function(err, result){
-        if (err) { return cb(err); }
-        return cb(null, result.rows[0].id);
-    });
+    return;
 };
 
-exports.update =  function(id, data, cb){
-    if (! validate(data)){
-        return process.nextTick(function(){
-            cb('Invalid Data');
-        });
-    }
-    var query = 'update users set name = $2, email = $3, intercode_id = $4 where id = $1';
-    var dataArr = [id, data.name, data.email, data.intercode_id];
-    database.query(query, dataArr, cb);
-};
-
-exports.delete =  function(id, cb){
-    var query = 'delete from users where id = $1';
-    database.query(query, [id], cb);
-};
-
-exports.findOrCreate = function(data, cb){
-    exports.getByIntercodeId(data.intercode_id, function(err, user){
-        if (err) { return cb(err); }
-        if (user) {
-            exports.update(user.id, data, function(err){
-                if (err) { return cb(err); }
-                exports.get(user.id, cb);
-            });
-        } else {
-            exports.create(data, function(err, id){
-                if (err) { return cb(err); }
-                exports.get(id, cb);
-            });
+exports.find = async function(conditions = {}, options = {}){
+    const queryParts = [];
+    const queryData = [];
+    for (const field of tableFields){
+        if (_.has(conditions, field)){
+            queryParts.push(field + ' = $' + (queryParts.length+1));
+            queryData.push(conditions[field]);
         }
-    });
+    }
+    let query = 'select * from users';
+    if (queryParts.length){
+        query += ' where ' + queryParts.join(' and ');
+    }
+    query += ' order by name';
+
+    if (_.has(options, 'offset')){
+        query += ` offset ${Number(options.offset)}`;
+    }
+
+    if (_.has(options, 'limit')){
+        query += ` limit ${Number(options.limit)}`;
+    }
+    const result = await database.query(query, queryData);
+    return result.rows;
 };
 
+exports.findOne = async function( conditions, options = {}){
+    options.limit = 1;
+    const results = await exports.find(conditions, options);
+    if (results.length){
+        return results[0];
+    }
+    return;
+};
+
+exports.create = async function(data){
+    if (! validate(data)){
+        throw new Error('Invalid Data');
+    }
+    const queryFields = [];
+    const queryData = [];
+    const queryValues = [];
+    for (const field of tableFields){
+        if (_.has(data, field)){
+            queryFields.push(field);
+            queryValues.push('$' + queryFields.length);
+            queryData.push(data[field]);
+        }
+    }
+
+    let query = 'insert into users (';
+    query += queryFields.join (', ');
+    query += ') values (';
+    query += queryValues.join (', ');
+    query += ') returning id';
+
+    const result = await database.query(query, queryData);
+    return result.rows[0].id;
+};
+
+exports.update = async function(id, data){
+    if (! validate(data)){
+        throw new Error('Invalid Data');
+    }
+    const queryUpdates = [];
+    const queryData = [id];
+    for (const field of tableFields){
+        if (_.has(data, field)){
+            queryUpdates.push(field + ' = $' + (queryUpdates.length+2));
+            queryData.push(data[field]);
+        }
+    }
+
+    let query = 'update users set ';
+    query += queryUpdates.join(', ');
+    query += ' where id = $1';
+    if (queryData.length > 1){
+        await database.query(query, queryData);
+        await cache.invalidate('user', id);
+    }
+};
+
+exports.delete =  async function(id){
+    const query = 'delete from users where id = $1';
+    await database.query(query, [id]);
+    await cache.invalidate('user', id);
+};
+
+exports.findOrCreate = async function(data){
+
+    const user = await exports.findOne({intercode_id: data.intercode_id});
+    if (user) {
+        await exports.update(user.id, data);
+        return await exports.get(user.id);
+    } else {
+        const id = await exports.create(data);
+        return await exports.get(id);
+    }
+};
 
 function validate(data){
     if (! validator.isLength(data.name, 2, 255)){

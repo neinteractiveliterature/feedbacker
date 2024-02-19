@@ -1,46 +1,60 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
-var flash = require('express-flash');
-var session = require('express-session');
-var config = require('config');
-var _ = require('underscore');
-var moment = require('moment');
-var methodOverride = require('method-override');
-var redis = require('redis');
-var passport = require('passport');
-var OAuth2Strategy = require('passport-oauth2').Strategy;
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const flash = require('express-flash');
+const session = require('express-session');
+const config = require('config');
+const _ = require('underscore');
+const moment = require('moment');
+const methodOverride = require('method-override');
+const redis = require('redis');
+const passport = require('passport');
+const OAuth2Strategy = require('passport-oauth2').Strategy;
 
-var models = require('./lib/models');
+const models = require('./lib/models');
 
-var Intercode = require('./lib/intercode');
-var permission = require('./lib/permission');
+const Intercode = require('./lib/intercode');
+const permission = require('./lib/permission');
 
-var surveyHelper = require('./lib/survey-helper');
+const surveyHelper = require('./lib/survey-helper');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var surveysRouter = require('./routes/surveys');
-//var reportsRouter = require('./routes/reports');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const surveyRouter = require('./routes/survey');
+//const reportsRouter = require('./routes/reports');
 
-var app = express();
+const app = express();
+
+// if running in SSL Only mode, redirect to SSL version
+if (config.get('app.secureOnly')){
+    app.all('*', function(req, res, next){
+        if (req.originalUrl.match(/\/insecure-api\//)){
+            return next();
+        }
+        if (req.headers['x-forwarded-proto'] !== 'https') {
+            res.redirect('https://' + req.headers.host + req.url);
+        } else {
+            next();
+        }
+    });
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+if (config.get('app.logRequests')){
+    app.use(logger('dev'));
+}
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 app.use(methodOverride(function(req, res){
     if (req.body && typeof req.body === 'object' && '_method' in req.body) {
     // look in urlencoded POST bodies and delete it
-        var method = req.body._method;
+        const method = req.body._method;
         delete req.body._method;
         return method;
     }
@@ -48,7 +62,7 @@ app.use(methodOverride(function(req, res){
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-var sessionConfig = {
+const sessionConfig = {
     secret: config.get('app.sessionSecret'),
     rolling: true,
     saveUninitialized: true,
@@ -56,17 +70,31 @@ var sessionConfig = {
 };
 
 if (config.get('app.sessionType') === 'redis'){
-    var RedisStore = require('connect-redis')(session);
-    var redisClient = null;
-    if (config.get('app.redisURL')){
-        var redisToGo   = require('url').parse(config.get('app.redisURL'));
-        redisClient = redis.createClient(redisToGo.port, redisToGo.hostname);
+    const RedisStore = require('connect-redis').default;
 
-        redisClient.auth(redisToGo.auth.split(':')[1]);
-
+    let redisClient = null;
+    if (config.get('app.redis.url')){
+        const options = {
+            url: config.get('app.redis.url')
+        };
+        if (config.get('app.redis.tls')){
+            options.tls = {rejectUnauthorized: false};
+        }
+        redisClient = redis.createClient(options);
     } else {
         redisClient = redis.createClient();
     }
+    redisClient.on('connect', function() {
+        console.log('Using redis for sessions');
+    });
+    redisClient.on('error', err => {
+        console.log('Error ' + err);
+    });
+
+    (async() => {
+        await redisClient.connect().catch(console.error);
+    })();
+
     sessionConfig.store = new RedisStore({ client: redisClient });
     sessionConfig.resave = true;
 }
@@ -84,58 +112,56 @@ app.use(permission());
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 passport.serializeUser(function(user, cb) {
     cb(null, user.id);
 });
 
-passport.deserializeUser(function(id, cb) {
-    models.user.get(id, function(err, user) {
-        cb(err, user);
-    });
+passport.deserializeUser(async function(req, id, cb) {
+    try{
+        const user = await models.user.get(id);
+        cb(null, user);
+    } catch (err){
+        cb(err);
+    }
 });
 
-var passportClient = new OAuth2Strategy(config.get('auth'),
-    function(req, accessToken, refreshToken, profile, cb) {
-        models.user.findOrCreate({
-            name: profile.name_without_nickname,
-            intercode_id: profile.id,
-            email: profile.email
-        }, function(err, user){
-            if (err) { return cb(err); }
+const passportClient = new OAuth2Strategy(config.get('auth'),
+    async function(req, accessToken, refreshToken, profile, cb) {
+        try {
+            const user = await models.user.findOrCreate({
+                name: profile.name,
+                intercode_id: profile.id,
+                email: profile.email
+            });
             req.session.accessToken = accessToken;
-            return cb(null, user);
-        });
+            cb(null, user);
+        } catch (err) {
+            console.trace(err);
+            cb(err);
+        }
     }
 );
 
-passportClient.userProfile = function (token, cb) {
-    var intercode = new Intercode(token);
-    intercode.getProfile(function(err, data){
-        if (err) { return cb(err); }
-        cb(null, data.myProfile);
-    });
+passportClient.userProfile = async function (token, cb) {
+    const intercode = new Intercode(token);
+    try {
+        const data = await intercode.getUser();
+        cb(null, data.currentUser);
+    } catch (err) {
+        cb(err);
+    }
 };
 
 passport.use(passportClient);
 
 // Setup intercode connection for routes
-app.use(function(req, res, next){
+
+app.use(async function(req, res, next){
     if (req.session.accessToken && req.user && !req.originalUrl.match(/^\/log(in|out)/) ){
         req.intercode = new Intercode(req.session.accessToken);
-        req.intercode.getMemberEvents(req.user.intercode_id, function(err, events){
-            if (err) {
-                if(err.response && err.response.error === 'invalid_token'){
-                    req.logout();
-                    console.log('deleting token');
-                    delete req.session.accessToken;
-                    return res.redirect(req.originalUrl);
-                } else {
-                    return next(err);
-                }
-            }
-            req.user.events = events;
-            next();
-        });
+        req.user.events = await req.intercode.getMemberEvents(req.user.intercode_id);
+        next();
     } else {
         next();
     }
@@ -151,18 +177,22 @@ app.use(function(req, res, next){
     res.locals.humanize = surveyHelper.humanize;
     res.locals.teamMembers = surveyHelper.teamMembers;
     res.locals.activeUser = req.user;
+    res.locals.capitalize = function(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
     next();
 });
 
-app.use(permission());
-
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/surveys', surveysRouter);
+app.use('/survey', surveyRouter);
 //app.use('/reports', reportsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+    if (req.app.get('env') === 'development'){
+        console.error('Requested: ' + req.originalUrl);
+    }
     next(createError(404));
 });
 

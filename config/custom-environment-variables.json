@@ -1,11 +1,20 @@
 {
     "app": {
         "dbURL": "DATABASE_URL",
+        "dbSSL": "DATABASE_SSL",
+        "dbPoolSize": "DATABASE_POOL_SIZE",
         "sessionType": "SESSION_TYPE",
         "sessionSecret": "SESSION_SECRET",
         "graphqlURL": "INTERCODE_GRAPHQL_URL",
         "interconBaseURL": "INTERCON_BASE_URL",
-        "redisURL": "REDISTOGO_URL"
+        "redisURL": "REDISTOGO_URL",
+        "secureOnly": "SECURE_ONLY",
+        "redis": {
+            "url": "REDIS_URL",
+            "tls": "REDIS_TLS"
+        },
+        "cacheType": "CACHE_TYPE",
+        "fontAwesomeKit": "FONTAWESOME_KIT"
     },
     "auth": {
         "authorizationURL": "INTERCODE_URL",

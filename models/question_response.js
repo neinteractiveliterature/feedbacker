@@ -4,35 +4,26 @@ const Model = require('../lib/Model');
 
 const tableFields = [
     'id',
+    'question_id',
     'response_id',
-    'event_id',
-    'concom',
-    'gm',
-    'recomend',
-    'skipped',
+    'value',
     'created'
 ];
 
-const Feedback = new Model('feedback', tableFields, {
+const QuestionResponse = new Model('question_responses', tableFields, {
     order: ['created'],
     validator: validate
 });
 
-module.exports = Feedback;
+module.exports = QuestionResponse;
 
 function validate(data){
     if (! validator.isNumeric('' + data.response_id)){
         return false;
     }
-    if (! validator.isNumeric('' + data.event_id)){
-        return false;
-    }
-    if (! validator.isNumeric('' + data.recommend)){
+    if (! validator.isNumeric('' + data.question_id)){
         return false;
     }
 
     return true;
 }
-
-
-

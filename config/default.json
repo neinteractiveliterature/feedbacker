@@ -3,11 +3,21 @@
         "name": "Intercon Survey System",
         "debug": false,
         "dbURL": "postgres://feedbacker:feedbacker@localhost:5432/feedbacker",
+        "dbSSL": false,
+        "dbPoolSize": 1,
+        "secureOnly": false,
         "sessionType": "local",
         "sessionSecret": "surveys",
         "graphqlURL": "graphqlURL",
         "interconBaseURL": "interconBaseURL",
-        "redisURL": false
+        "redis":{
+            "url": false,
+            "tls": false
+        },
+        "cacheType": "redis",
+        "logRequests": true,
+        "fontAwesomeKit": null
+
     },
     "auth": {
         "authorizationURL": "authorizationURL",

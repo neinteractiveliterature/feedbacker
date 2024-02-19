@@ -1,0 +1,125 @@
+mixin questionDisplay(question)
+    case question.type
+        when 'shorttext'
+            +questionShorttext(question)
+        when 'text'
+            +questionText(question)
+        when 'boolean'
+            +questionBoolean(question)
+        when 'scale'
+            +questionScale(question)
+        when 'events'
+            +questionEvents(question)
+
+
+mixin questionShorttext(question)
+    label.control-label(for="question-" + question.id)=question.question
+    input.form-control(
+        type="text"
+        name="response[responses]["+question.id+"]"
+        value=getValue(question.id)
+        id='question-' + question.id,
+        required=question.required
+        )
+    if question.description
+        .form-text=question.description
+
+    div.invalid-feedback Please choose a valid value for this item
+    
+
+mixin questionText(question)
+    label.control-label(for="question-" + question.id)=question.question
+    if question.description
+        .form-text=question.description
+    textarea.form-control(
+        name="response[responses]["+question.id+"]"
+        id='question-' + question.id
+        required=question.required
+    )
+    = getValue(question.id)
+
+mixin questionBoolean(question)
+    <!-- Default checked -->
+    .form-check.form-switch
+        input.form-check-input(
+            type="checkbox"
+            name="response[responses]["+question.id+"]"
+            checked=getValue(question.id)
+            id='question-' + question.id
+            )
+        label.form-check-label(for="question-" + question.id)=question.question
+        if question.description
+            .form-text=question.description
+
+mixin questionScale(question)
+    label.control-label(for="question-" + question.id)=question.question
+    if question.description
+            .form-text=question.description
+    div(id=`question-${question.id}`)
+        .form-check.form-check-inline
+            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=-1 id=`question-${question.id}-nr` checked=getValue(question.id)===null || getValue(question.id) === -1)
+            label.form-check-label(for=`question-${question.id}-nr`) No Response
+        .form-check.form-check-inline
+            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=1 id=`question-${question.id}-1` checked=getValue(question.id)===1)
+            label.form-check-label(for=`question-${question.id}-1`) Strong Negative (1)
+        .form-check.form-check-inline
+            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=2 id=`question-${question.id}-2` checked=getValue(question.id)===2)
+            label.form-check-label(for=`question-${question.id}-2`) Negative (2)
+        .form-check.form-check-inline
+            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=3 id=`question-${question.id}-3` checked=getValue(question.id)===3)
+            label.form-check-label(for=`question-${question.id}-3`) Neutral (3)
+        .form-check.form-check-inline
+            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=4 id=`question-${question.id}-4` checked=getValue(question.id)===4)
+            label.form-check-label(for=`question-${question.id}-4`) Positive (4)
+        .form-check.form-check-inline
+            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=5 id=`question-${question.id}-5` checked=getValue(question.id)===5)
+            label.form-check-label(for=`question-${question.id}-5`) Strongly Positive (5)
+
+
+mixin questionEvents(question)
+    .table-responsive
+        table.table.table-sm.table-striped
+            thead
+                th Category
+                th Event Name
+                th Actions
+            tbody
+                for eventId in userEvents
+                    - var event = events[eventId]
+                    - if (!event) { continue }
+                    - var feedback = _.findWhere(response.feedback, {event_id: Number(event.id)})
+                    - console.log(feedback)
+                    tr(class=feedback ? 'table-success' : 'table-warning')
+                        td
+                            small= event.event_category.name
+                        td= event.title
+                        td(style='min-width:250px')
+                            a.btn.btn-sm.btn-outline-danger.mx-3(href='/feedback/remove?event_id='+event.id) Remove
+                            if (feedback)
+                                a.btn.btn-sm.btn-outline-primary.mx-3(href='/feedback/'+feedback.id) Edit Feedback
+                            else
+                                a.btn.btn-sm.btn-outline-primary.mx-3(href='/feedback/new?event_id='+eventId) Provide Feedback
+            tfoot
+                tr
+                    td(colspan=2)
+                        select.form-control.select2#addEvent
+                            for event in events
+                                option(value=event.id)= event.event_category.name + ': '+ event.title
+
+                    td
+                        a.btn.btn-success.mb-2#addEventBtn( href='#')
+                            span.fa.fa-plus
+                            |  Add Event
+
+mixin surveyModal()
+    .modal.fade#surveyModal(role="dialog" tabindex="-1" aria-labelledby="popupModalLabel" aria-hidden="true")
+        .modal-dialog.modal-xl.modal-dialog-centered(role="document")
+            .modal-content
+                .modal-header
+                    h5.modal-title
+                    button.btn-close#dismissPopupModal(type="button", data-bs-dismiss="modal" area-label="Close")
+                .modal-body
+                .modal-footer
+                    button.btn.btn-secondary(type="button", data-bs-dismiss="modal") Cancel
+                    span.extra-buttons
+                    button.btn.btn-primary.save-btn(type="submit") Save

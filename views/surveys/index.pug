@@ -2,7 +2,7 @@ extends ../layout
 
 block content
     if (checkPermission('staff'))
-        a.btn.btn-success.mb-2( href='/surveys/new')
+        a.btn.btn-success.mb-2( href='/survey/new')
             span.fa.fa-plus
             |  New Survey
     .table-responsive
@@ -19,13 +19,13 @@ block content
                         td= survey.published ? 'Active' : 'Unpublished'
                         td
                             if (survey.created_by === activeUser.id || checkPermission('staff'))
-                                a.btn.btn-sm.btn-outline-secondary.mx-3(href='/surveys/'+survey.id+'/edit') Edit
+                                a.btn.btn-sm.btn-outline-secondary.mx-3(href='/survey/'+survey.id+'/edit') Edit
                             if (survey.published)
                                 if (response)
                                     if (! response.completed)
-                                        a.btn.btn-sm.btn-outline-primary.mx-3(href='/surveys/'+survey.id) Continue
+                                        a.btn.btn-sm.btn-outline-primary.mx-3(href='/survey/'+survey.id) Continue
                                 else
-                                    a.btn.btn-sm.btn-outline-primary.mx-3(href='/surveys/'+survey.id) Answer
+                                    a.btn.btn-sm.btn-outline-primary.mx-3(href='/survey/'+survey.id) Answer
 
 
 
