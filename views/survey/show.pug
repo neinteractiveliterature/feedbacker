@@ -1,0 +1,37 @@
+extends ../layout
+
+include ../partials/survey
+
+block content
+    form.form.needs-validation.my-3(method="POST" action="/response/"+response.id novalidate)
+        input(type="hidden" name="_method"   value="PUT")
+        input#csrf(type="hidden" name='_csrf' value=csrfToken)
+        input#survey-id(type="hidden" name='response[survey_id]' value=survey.id)
+        input#response-id(type="hidden" name='response[id]' value=response.id)
+        input#base-url(type="hidden" name='survey[base_url]' value=survey.base_url)
+        if (response.complete)
+            .badge.text-bg-success Completed
+        .row.my-2
+            .col
+                | Filling out survey as #{activeUser.name}
+        for question in survey.questions
+            .row.my-2
+                .col
+                    +questionDisplay(question)
+
+        form-group
+            if !response.complete
+                button.btn.btn-secondary.me-2#survey-save(type="submit" name='response[action]' value='save' disabled=response.complete) Save Progress
+                button.btn.btn-primary.mx-2#survey-submit(type="submit" name='response[action]' value='submit' disabled=response.complete) Submit Response
+            else
+                button.btn.btn-primary.me-2#survey-unsubmit(type="submit" name='response[action]' value='unsubmit' disabled=!response.complete) Reopen Response
+            a.btn.btn-link.mx-3(href="/") Cancel
+
+    +surveyModal()
+append scripts
+    script(src='/javascripts/templates/feedback/modalEditForm.js')
+    script(src='/javascripts/templates/feedback/modalNewForm.js')
+    script(src='/javascripts/templates/survey/signupsList.js')
+    script(src='/javascripts/validator.js')
+    script(src='/javascripts/feedback.js')
+

@@ -8,6 +8,7 @@ const tableFields = [
     'question',
     'description',
     'type',
+    'config',
     'display_order',
     'required'
 ];

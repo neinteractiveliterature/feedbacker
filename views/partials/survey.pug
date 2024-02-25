@@ -8,18 +8,21 @@ mixin questionDisplay(question)
             +questionBoolean(question)
         when 'scale'
             +questionScale(question)
+        when 'dropdown'
+            +questionDropdown(question)
         when 'events'
-            +questionEvents(question)
+            +questionEventsStub(question)
 
 
 mixin questionShorttext(question)
     label.control-label(for="question-" + question.id)=question.question
     input.form-control(
         type="text"
-        name="response[responses]["+question.id+"]"
+        name=`response[responses][q-${question.id}]`
         value=getValue(question.id)
         id='question-' + question.id,
         required=question.required
+        disabled=response.complete
         )
     if question.description
         .form-text=question.description
@@ -32,87 +35,146 @@ mixin questionText(question)
     if question.description
         .form-text=question.description
     textarea.form-control(
-        name="response[responses]["+question.id+"]"
+        name=`response[responses][q-${question.id}]`
         id='question-' + question.id
         required=question.required
+        disabled=response.complete
+        rows=question.config && question.config.rows?question.config.rows:5
     )
-    = getValue(question.id)
+        = getValue(question.id)
 
 mixin questionBoolean(question)
     <!-- Default checked -->
     .form-check.form-switch
         input.form-check-input(
             type="checkbox"
-            name="response[responses]["+question.id+"]"
+            name=`response[responses][q-${question.id}]`
             checked=getValue(question.id)
             id='question-' + question.id
+            disabled=response.complete
             )
         label.form-check-label(for="question-" + question.id)=question.question
         if question.description
             .form-text=question.description
 
+mixin questionDropdown(question)
+    label.control-label(for="question-" + question.id)=question.question
+    select.form-select.select2.question(
+        data-placeholder=question.config.placeholder
+        name=`response[responses][q-${question.id}]`
+        disabled=response.complete
+        required=question.required
+        )
+        option
+        each option, idx in question.config.options
+            option(value=idx selected=Number(getValue(question.id))===idx )= option
+
 mixin questionScale(question)
     label.control-label(for="question-" + question.id)=question.question
     if question.description
             .form-text=question.description
+
     div(id=`question-${question.id}`)
-        .form-check.form-check-inline
-            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=-1 id=`question-${question.id}-nr` checked=getValue(question.id)===null || getValue(question.id) === -1)
-            label.form-check-label(for=`question-${question.id}-nr`) No Response
-        .form-check.form-check-inline
-            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=1 id=`question-${question.id}-1` checked=getValue(question.id)===1)
-            label.form-check-label(for=`question-${question.id}-1`) Strong Negative (1)
-        .form-check.form-check-inline
-            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=2 id=`question-${question.id}-2` checked=getValue(question.id)===2)
-            label.form-check-label(for=`question-${question.id}-2`) Negative (2)
-        .form-check.form-check-inline
-            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=3 id=`question-${question.id}-3` checked=getValue(question.id)===3)
-            label.form-check-label(for=`question-${question.id}-3`) Neutral (3)
-        .form-check.form-check-inline
-            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=4 id=`question-${question.id}-4` checked=getValue(question.id)===4)
-            label.form-check-label(for=`question-${question.id}-4`) Positive (4)
-        .form-check.form-check-inline
-            input.form-check-input(type="radio" name=`response[responses][${question.id}]` value=5 id=`question-${question.id}-5` checked=getValue(question.id)===5)
-            label.form-check-label(for=`question-${question.id}-5`) Strongly Positive (5)
+        if (!questionrequired)
+            .form-check.form-check-inline.mx-3.px-2.border-end
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=-1 id=`question-${question.id}-nr` checked=getValue(question.id)===null || Number(getValue(question.id)) === -1 disabled=response.complete)
+                label.form-check-label(for=`question-${question.id}-nr`) No Response
+        if question.config && question.config.options
+            each option, idx in question.config.options
+                .form-check.form-check-inline.mx-2
+                    input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=idx id=`question-${question.id}-${idx}` checked=Number(getValue(question.id))===idx  disabled=response.complete)
+                    label.form-check-label(for=`question-${question.id}-${idx}`)= option
+
+        else
+            .form-check.form-check-inline.mx-2
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=1 id=`question-${question.id}-1` checked=Number(getValue(question.id))===1  disabled=response.complete)
+                label.form-check-label(for=`question-${question.id}-1`) Strong Negative (1)
+            .form-check.form-check-inline.mx-2
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=2 id=`question-${question.id}-2` checked=Number(getValue(question.id))===2  disabled=response.complete)
+                label.form-check-label(for=`question-${question.id}-2`) Negative (2)
+            .form-check.form-check-inline.mx-2
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=3 id=`question-${question.id}-3` checked=Number(getValue(question.id))===3  disabled=response.complete)
+                label.form-check-label(for=`question-${question.id}-3`) Neutral (3)
+            .form-check.form-check-inline.mx-2
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=4 id=`question-${question.id}-4` checked=Number(getValue(question.id))===4  disabled=response.complete)
+                label.form-check-label(for=`question-${question.id}-4`) Positive (4)
+            .form-check.form-check-inline.mx-2
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=5 id=`question-${question.id}-5` checked=Number(getValue(question.id))===5 disabled=response.complete)
+                label.form-check-label(for=`question-${question.id}-5`) Strongly Positive (5)
+
+mixin questionEventsStub(question)
+    #questionEvents(style='display:none')
+    .col-sm-6.offset-sm-3.text-center#signupsLoading
+        .spinner-border.m-5(role="status" style="width: 3rem; height: 3rem;")
+            .visually-hidden Table is Loading
 
 
-mixin questionEvents(question)
+mixin questionEvents()
     .table-responsive
         table.table.table-sm.table-striped
             thead
                 th Category
                 th Event Name
-                th Actions
+                th.text-end Actions
             tbody
-                for eventId in userEvents
-                    - var event = events[eventId]
-                    - if (!event) { continue }
-                    - var feedback = _.findWhere(response.feedback, {event_id: Number(event.id)})
-                    - console.log(feedback)
-                    tr(class=feedback ? 'table-success' : 'table-warning')
+                for userEvent in userEvents
+                    -
+                        const event = userEvent.event
+                        if (!event) { continue }
+                        const feedback = userEvent.feedback
+
+                        let hasFeedback = false;
+                        if (feedback){
+                            if (feedback.recommend && feedback.recommend !== -1){
+                                hasFeedback = true;
+                            } else if (feedback.gm && feedback.gm !== ''){
+                                hasFeedback = true;
+                            } else if (feedback.concom && feedback.concom !== ''){
+                                hasFeedback = true;
+                            }
+
+                        }
+                    tr
                         td
                             small= event.event_category.name
                         td= event.title
-                        td(style='min-width:250px')
-                            a.btn.btn-sm.btn-outline-danger.mx-3(href='/feedback/remove?event_id='+event.id) Remove
-                            if (feedback)
-                                a.btn.btn-sm.btn-outline-primary.mx-3(href='/feedback/'+feedback.id) Edit Feedback
-                            else
-                                a.btn.btn-sm.btn-outline-primary.mx-3(href='/feedback/new?event_id='+eventId) Provide Feedback
+                            if hasFeedback
+                                .badge.text-bg-success.ms-2
+                                    i.fas.fa-check-circle.me-1
+                                    | Feedback Provided
+                        td.text-end
+                            a.btn.btn-sm.btn-outline-primary.feedback-edit(
+                                data-eventid=event.id
+                                href='#'
+                            )
+                                i.fas.fa-edit.me-1.feedback-icon
+                                if hasFeedback
+                                    | Edit Feedback
+                                else
+                                    | Provide Feedback
+                            a.btn.btn-sm.btn-outline-danger.ms-1.feedback-remove(
+                                data-eventid= event.id
+                                href='#'
+                                data-toggle='tooltip'
+                                title="Remove from List"
+                            )
+                                i.fas.fa-trash.fa-fw.feedback-icon
+
             tfoot
                 tr
-                    td(colspan=2)
-                        select.form-control.select2#addEvent
-                            for event in events
-                                option(value=event.id)= event.event_category.name + ': '+ event.title
+                    td(colspan=3)
+                        .input-group.my-2.eventPicker
+                            select.form-select.select2.event-select(data-placeholder='Select an event to add')
+                                option
+                                for event in events
+                                    option(value=event.id)= event.event_category.name + ': '+ event.title
 
-                    td
-                        a.btn.btn-success.mb-2#addEventBtn( href='#')
-                            span.fa.fa-plus
-                            |  Add Event
+                            button.btn.btn-outline-success.feedback-add( type="button")
+                                span.fa.fa-plus
+                                |  Add Event
 
 mixin surveyModal()
-    .modal.fade#surveyModal(role="dialog" tabindex="-1" aria-labelledby="popupModalLabel" aria-hidden="true")
+    .modal.modal-fullscreen-lg-down.fade#surveyModal(role="dialog" tabindex="-1" aria-labelledby="popupModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false")
         .modal-dialog.modal-xl.modal-dialog-centered(role="document")
             .modal-content
                 .modal-header

@@ -9,9 +9,11 @@ function index(req, res, next){
 }
 
 function logout(req, res, next){
-    req.logout();
-    delete req.session.accessToken;
-    res.redirect('/');
+    req.logout(req.user, err => {
+        if(err) return next(err);
+        delete req.session.accessToken;
+        res.redirect('/');
+    });
 }
 
 const router = express.Router();

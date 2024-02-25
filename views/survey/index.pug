@@ -21,11 +21,15 @@ block content
                             if (survey.created_by === activeUser.id || checkPermission('staff'))
                                 a.btn.btn-sm.btn-outline-secondary.mx-3(href='/survey/'+survey.id+'/edit') Edit
                             if (survey.published)
-                                if (response)
-                                    if (! response.completed)
-                                        a.btn.btn-sm.btn-outline-primary.mx-3(href='/survey/'+survey.id) Continue
-                                else
-                                    a.btn.btn-sm.btn-outline-primary.mx-3(href='/survey/'+survey.id) Answer
-
-
+                                a.btn.btn-sm.btn-outline-primary.mx-3(href='/response/'+survey.id)
+                                    if survey.response
+                                        if survey.response.complete
+                                            i.fas.fa-eye.fa-fw.me-1
+                                            | View
+                                        else
+                                            i.fas.fa-edit.fa-fw.me-1
+                                            | Continue
+                                    else
+                                        i.fas.fa-edit.fa-fw.me-1
+                                        | Answer
 

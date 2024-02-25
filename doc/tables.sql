@@ -19,6 +19,7 @@ create table users (
 create table surveys (
     id          serial,
     name        varchar(80) not null,
+    base_url    varchar(80) not null,
     created_by  int not null,
     created     timestamp default now(),
     published   boolean default false,
@@ -35,6 +36,7 @@ create table questions (
     question    varchar(255) not null,
     description text,
     type        varchar(20),
+    config      jsonb,
     display_order int not null,
     required    boolean default false,
     primary key (id),
@@ -71,6 +73,7 @@ create table feedback (
     event_id    int not null,
     concom      text,
     gm          text,
+    gm_use_name boolean default false,
     recommend   int,
     skipped     boolean default false,
     created     timestamp default now(),

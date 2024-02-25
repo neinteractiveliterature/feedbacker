@@ -23,6 +23,8 @@ const surveyHelper = require('./lib/survey-helper');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const surveyRouter = require('./routes/survey');
+const feedbackRouter = require('./routes/feedback');
+const responseRouter = require('./routes/response');
 //const reportsRouter = require('./routes/reports');
 
 const app = express();
@@ -49,7 +51,7 @@ if (config.get('app.logRequests')){
     app.use(logger('dev'));
 }
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use(methodOverride(function(req, res){
     if (req.body && typeof req.body === 'object' && '_method' in req.body) {
@@ -186,6 +188,8 @@ app.use(function(req, res, next){
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/survey', surveyRouter);
+app.use('/feedback', feedbackRouter);
+app.use('/response', responseRouter);
 //app.use('/reports', reportsRouter);
 
 // catch 404 and forward to error handler
@@ -201,7 +205,9 @@ app.use(function(err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+    if (req.app.get('env') === 'development' && err.status !== 404){
+        console.trace(err);
+    }
     // render the error page
     res.status(err.status || 500);
     res.render('error');

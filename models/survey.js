@@ -2,9 +2,13 @@
 const validator = require('validator');
 const Model = require('../lib/Model');
 
+const models = {
+    question: require('./question')
+};
 const tableFields = [
     'id',
     'name',
+    'base_url',
     'created_by',
     'created',
     'published'
@@ -12,7 +16,8 @@ const tableFields = [
 
 const Survey = new Model('surveys', tableFields, {
     order: ['name'],
-    validator: validate
+    validator: validate,
+    postSelect: fill
 });
 
 module.exports = Survey;
@@ -22,5 +27,9 @@ function validate(data){
         return false;
     }
     return true;
+}
 
+async function fill(record){
+    record.questions = await models.question.find({survey_id:record.id});
+    return record;
 }

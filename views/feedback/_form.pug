@@ -1,0 +1,65 @@
+input(type="hidden" name="feedback[response_id]" value=feedback.response_id)
+input(type="hidden" name="feedback[event_id]" value=feedback.event_id)
+if (backto)
+    input(type="hidden" name="backto" value=backto)
+.row.my-2
+    .col
+
+        -
+            const team_members = [];
+            for (const team_member of event.team_members){
+                if (team_member.display_team_member){
+                    team_members.push(team_member.user_con_profile.name_without_nickname)
+                }
+            }
+
+
+        | #{event.event_category.team_member_name}(s): #{team_members.join(', ')}
+    .col.text-end
+        a.btn.btn-outline-primary(target='_blank' href=`${base_url}/events/${feedback.event_id}`) View on Intercon Site
+            i.fas.fa-external-link-alt.ms-2
+
+
+.row.my-2
+    .col
+        label.control-label(for="feedback_recommend") Would you recommend this #{event.event_category.name}?
+        select.form-control.select2#feedback_recommend(name='feedback[recommend]')
+            option
+            option(value=-1 selected=feedback.recommend===-1) No Response
+            option(value=1 selected=feedback.recommend===1) Strong No
+            option(value=2 selected=feedback.recommend===2) No
+            option(value=3 selected=feedback.recommend===3) Neutral
+            option(value=4 selected=feedback.recommend===4) Yes
+            option(value=5 selected=feedback.recommend===5) Strong Yes
+
+.row.my-2
+    .col
+        label.control-label(for="feedback_concom") Feedback for Intercon Staff Only
+        textarea.form-control(name="feedback[concom]",id="feedback_concom",rows=5)
+            = feedback.concom
+
+.row.mt-2.mb-1
+    .col
+        label.control-label(for="feedback_concom") Feedback for #{event.event_category.team_member_name}(s)
+        textarea.form-control(name="feedback[gm]",id="feedback_gm",rows=5)
+            = feedback.gm
+
+.row.mb-2
+    .col
+        .form-check.form-switch
+            input.form-check-input#feedback_gm_use_name(
+                type="checkbox"
+                name="feedback[gm_use_name]"
+                checked=feedback.gm_use_name
+            )
+            label.form-check-label(for="feedback_gm_use_name") Share my name with the #{event.event_category.team_member_name}(s)
+        .form-text The above feedback will be shared with the #{event.event_category.team_member_name}(s) as-is.  If you want them to know who you are, you may indicate so above.
+
+
+if (!modal)
+    .row.my-2
+        .col
+            button.btn.btn-primary(type="submit")= skill_type.id?'Update':'Create'
+            a.btn.btn-link(href="/skill_type") Cancel
+
+

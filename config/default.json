@@ -6,7 +6,7 @@
         "dbSSL": false,
         "dbPoolSize": 1,
         "secureOnly": false,
-        "sessionType": "local",
+        "sessionType": "redis",
         "sessionSecret": "surveys",
         "graphqlURL": "graphqlURL",
         "interconBaseURL": "interconBaseURL",

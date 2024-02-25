@@ -8,7 +8,8 @@ const tableFields = [
     'event_id',
     'concom',
     'gm',
-    'recomend',
+    'recommend',
+    'gm_use_name',
     'skipped',
     'created'
 ];
