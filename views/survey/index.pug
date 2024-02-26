@@ -5,31 +5,45 @@ block content
         a.btn.btn-success.mb-2( href='/survey/new')
             span.fa.fa-plus
             |  New Survey
-    .table-responsive
-        table.table.table-sm.table-hover.table-striped
-            thead
-                th Survey
-                th Status
-                th Actions
-            tbody#furnitureList
-            for survey in surveys
-                if (survey.published || survey.created_by === activeUser.id || checkPermission('staff'))
-                    tr
-                        td= survey.name
-                        td= survey.published ? 'Active' : 'Unpublished'
-                        td
-                            if (survey.created_by === activeUser.id || checkPermission('staff'))
-                                a.btn.btn-sm.btn-outline-secondary.mx-3(href='/survey/'+survey.id+'/edit') Edit
-                            if (survey.published)
-                                a.btn.btn-sm.btn-outline-primary.mx-3(href='/response/'+survey.id)
-                                    if survey.response
-                                        if survey.response.complete
-                                            i.fas.fa-eye.fa-fw.me-1
-                                            | View
-                                        else
+    .row
+        .col
+            .list-group
+                for survey in surveys
+                    if survey.published || survey.created_by === activeUser.id || checkPermission('staff')
+                        .list-group-item.p-3
+                            .row
+                                .col-auto
+                                    strong=survey.name
+                                    small.ms-1 (#{survey.convention.name})
+                                    if survey.created_by === activeUser.id || checkPermission('staff')
+                                        .badge.text-bg-info.ms-2=survey.published ? 'Active' : 'Unpublished'
+
+                                .col.text-end
+                                    if survey.created_by === activeUser.id || checkPermission('staff')
+                                        a.btn.btn-sm.btn-outline-dark.mx-1(href='/survey/'+survey.id+'/edit')
                                             i.fas.fa-edit.fa-fw.me-1
-                                            | Continue
-                                    else
-                                        i.fas.fa-edit.fa-fw.me-1
-                                        | Answer
+                                            | Edit Survey
+                                    if survey.responses.length
+                                        a.btn.btn-sm.btn-outline-secondary.mx-2.position-relative(href='/survey/'+survey.id+'/responses')
+                                            i.fas.fa-eye.fa-fw.me-1
+                                            | View All Responses
+                                            span.badge.rounded-pill.text-bg-danger.position-absolute.top-0.start-100.translate-middle=survey.responses.length
+                                    if _.keys(survey.feedback).length
+                                        a.btn.btn-sm.btn-outline-secondary.mx-2.position-relative(href='/survey/'+survey.id+'/feedback')
+                                            i.fas.fa-eye.fa-fw.me-1
+                                            | View My Events' Responses
+                                            span.badge.rounded-pill.text-bg-danger.position-absolute.top-0.start-100.translate-middle=_.flatten(_.pluck(survey.feedback, 'feedback')).length
+                                    if survey.published
+                                        a.btn.btn-sm.btn-outline-primary.mx-1(href='/response/'+survey.id)
+                                            if survey.response
+                                                if survey.response.complete
+                                                    i.fas.fa-eye.fa-fw.me-1
+                                                    | View My Response
+                                                else
+                                                    i.fas.fa-edit.fa-fw.me-1
+                                                    | Continue My Response
+                                            else
+                                                i.fas.fa-edit.fa-fw.me-1
+                                                | Answer
+
 

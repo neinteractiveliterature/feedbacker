@@ -143,20 +143,22 @@ mixin questionEvents()
                                     i.fas.fa-check-circle.me-1
                                     | Feedback Provided
                         td.text-end
-                            a.btn.btn-sm.btn-outline-primary.feedback-edit(
+                            button.btn.btn-sm.btn-outline-primary.feedback-edit(
+                                role='button'
                                 data-eventid=event.id
-                                href='#'
+                                disabled=disabled
                             )
                                 i.fas.fa-edit.me-1.feedback-icon
                                 if hasFeedback
                                     | Edit Feedback
                                 else
                                     | Provide Feedback
-                            a.btn.btn-sm.btn-outline-danger.ms-1.feedback-remove(
+                            button.btn.btn-sm.btn-outline-danger.ms-1.feedback-remove(
+                                role='button'
                                 data-eventid= event.id
-                                href='#'
                                 data-toggle='tooltip'
                                 title="Remove from List"
+                                disabled=disabled
                             )
                                 i.fas.fa-trash.fa-fw.feedback-icon
 

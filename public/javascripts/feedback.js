@@ -148,10 +148,14 @@ async function loadSignups(){
         eventList = (await eventsResult.json()).events;
     }
     const signupsResult = await fetch(`/response/${responseId}/signups`);
+    const complete = $('#response-complete').val();
     const data = {
         events: eventList,
         userEvents : (await signupsResult.json()).userEvents,
+        disabled: complete === 'true'
     };
+    console.log(data)
+
     $('#questionEvents').html(signupslistTemplate(data));
     $('#signupsLoading').hide();
     $('#questionEvents').show();

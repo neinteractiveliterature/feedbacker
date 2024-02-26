@@ -9,7 +9,8 @@ block content
         input#survey-id(type="hidden" name='response[survey_id]' value=survey.id)
         input#response-id(type="hidden" name='response[id]' value=response.id)
         input#base-url(type="hidden" name='survey[base_url]' value=survey.base_url)
-        if (response.complete)
+        input#response-complete(type='hidden' value=''+response.complete name='complete')
+        if response.complete
             .badge.text-bg-success Completed
         .row.my-2
             .col

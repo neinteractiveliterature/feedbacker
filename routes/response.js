@@ -104,6 +104,13 @@ async function getSignupsApi(req, res, next){
                 return {event:{id:eventId, title:'unknown', event_category:{name:'unknown'}}, feedback:{}};
             }
         });
+        userEvents = userEvents.sort((a, b) => {
+            if (a.event.event_category.name != b.event.event_category.name){
+                return a.event.event_category.name.localeCompare(b.event.event_category.name)
+            }
+            return a.event.title.localeCompare(b.event.title);
+        });
+
         res.json({
             success: true,
             userEvents: userEvents
@@ -153,7 +160,6 @@ async function getEventsListApi(req, res, next){
 async function saveResponse(req, res, next){
     const responseId = req.params.id;
     const response = req.body.response;
-    console.log(JSON.stringify(req.body, null, 2));
     req.session.responseData = response;
 
     try{

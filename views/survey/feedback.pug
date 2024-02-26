@@ -1,0 +1,12 @@
+extends ../layout
+
+block content
+    .row
+        .col
+            each event,id in feedback
+                h3 #{event.event.event_category.name}: #{event.event.title}
+                each item in event.feedback
+                    .card.my-2
+                        .card-body
+                            h5.card-title=item.user?item.user:Anonymous
+                            p= item.content

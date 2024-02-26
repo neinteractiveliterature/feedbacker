@@ -21,7 +21,6 @@ const permission = require('./lib/permission');
 const surveyHelper = require('./lib/survey-helper');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const surveyRouter = require('./routes/survey');
 const feedbackRouter = require('./routes/feedback');
 const responseRouter = require('./routes/response');
@@ -186,7 +185,6 @@ app.use(function(req, res, next){
 });
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/survey', surveyRouter);
 app.use('/feedback', feedbackRouter);
 app.use('/response', responseRouter);

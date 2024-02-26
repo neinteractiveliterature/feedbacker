@@ -15,7 +15,10 @@ async function list(req, res, next){
     try {
         const surveys = await req.models.survey.find({});
         res.locals.surveys = await async.map(surveys, async function(survey, cb){
+            survey.convention = await req.intercode.getConvention();
             survey.response = await req.models.response.findOne({survey_id: survey.id, user_id: req.user.id});
+            survey.responses = await surveyHelper.getResponses(survey, req.user, req.intercode);
+            survey.feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
             return survey;
         });
         res.render('survey/index', { pageTitle: 'Surveys' });
@@ -27,6 +30,65 @@ async function list(req, res, next){
 async function show(req, res, next){
 
 }
+
+async function showFeedback(req, res, next){
+    const surveyId = req.params.id;
+    try{
+        const survey = await req.models.survey.get(surveyId);
+        if (!survey){
+            req.flash('error', 'Survey not found');
+            return res.redirect('/survey')
+        };
+        if (!survey.published){
+            req.flash('error', 'Survey not published');
+            return res.redirect('/survey')
+        }
+        res.locals.feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
+        res.locals.survey = survey;
+        res.locals.breadcrumbs = {
+            path: [
+                { url: '/', name: 'Home'},
+                { url: '/survey', name: 'Surveys'},
+            ],
+            current: `Event feedback from ${survey.name}`
+        };
+
+        res.render('survey/feedback', {pageTitle: `Event feedback from ${survey.name}`});
+
+    } catch(err){
+        next(err);
+    }
+}
+
+async function showResponses(req, res, next){
+    const surveyId = req.params.id;
+    try{
+        const survey = await req.models.survey.get(surveyId);
+        if (!survey){
+            req.flash('error', 'Survey not found');
+            return res.redirect('/survey')
+        };
+        if (!survey.published){
+            req.flash('error', 'Survey not published');
+            return res.redirect('/survey')
+        }
+        res.locals.responses = await surveyHelper.getResponses(survey, req.user, req.intercode);
+        res.locals.survey = survey;
+        res.locals.breadcrumbs = {
+            path: [
+                { url: '/', name: 'Home'},
+                { url: '/survey', name: 'Surveys'},
+            ],
+            current: `Responses from ${survey.name}`
+        };
+
+        res.render('survey/responses', {pageTitle: `Responses from ${survey.name}`});
+
+    } catch(err){
+        next(err);
+    }
+}
+
 
 function showNew(req, res, next){
     res.locals.survey = {
@@ -126,7 +188,9 @@ router.use(function(req, res, next){
 
 router.get('/', permission('login'), list);
 router.get('/new', permission('staff'), csrf(), showNew);
-router.get('/:id', permission('login'), csrf(), show);
+router.get('/:id', permission('staff'), csrf(), show);
+router.get('/:id/feedback', permission('login'), csrf(), showFeedback);
+router.get('/:id/responses', permission('Con Com'), csrf(), showResponses);
 
 router.get('/:id/edit', permission('staff'), csrf(), showEdit);
 router.post('/', permission('staff'), csrf(), create);
