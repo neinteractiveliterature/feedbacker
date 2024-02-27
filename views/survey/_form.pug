@@ -1,0 +1,70 @@
+.row.my-2
+    .col
+        label.control-label(for="survey_name") Name
+        input.form-control#survey_name(type="text" placeholder="Name" name="survey[name]" value=survey.name required)
+        div.invalid-feedback Please choose a valid name
+
+.row.my-2
+    .col
+        label.control-label(for="survey_base_url") Base Url
+        input.form-control#survey_base_url(type="text" placeholder="Intercode URL" name="survey[base_url]" value=survey.base_url required)
+        div.invalid-feedback Please choose a base Url
+
+.row.my-2
+    .col
+        .form-check.form-switch
+            input.form-check-input#survey_published(type="checkbox", name="survey[published]" checked=survey.published)
+            label.form-check-label(for="survey_published") Publish Survey
+if survey.id
+    .row.my-2
+        .col
+            h4 Questions
+                a.btn.btn-sm.btn-outline-success.mx-2(href=`/question/new/${survey.id}`)
+                    span(class="fa fa-plus")
+                    |  New Question
+            .table-responsive
+                .col-sm-6.offset-sm-3.text-center#tableLoading
+                    .spinner-border.m-5(role="status" style="width: 3rem; height: 3rem;")
+                        .visually-hidden Table is Loading
+                table.table.table-striped.data-table.table-hover.my-3.dt-responsive.nowrap.table-sm.w-100(
+                    style="display: none"
+                    data-orderable-object='question'
+                    data-csrf=csrfToken
+                    class=!survey.published?'table-orderable':''
+                    )
+                    thead
+                        tr
+                            th
+                            th.sort-handle
+                            th Order
+                            th(data-priority="1") Question
+                            th Type
+                            th Required?
+                            th
+
+                    tbody
+                        for question in survey.questions
+                            tr(class=!survey.published?'clickable-row':'', data-click-object='question' data-click-id=question.id)
+                                td.dtr-control
+                                td= question.id
+                                td= question.display_order
+                                td= question.question
+                                td= question.type
+
+                                td
+                                    .badge(class=`text-bg-${question.required?'danger':'success'}`)=question.required?'Yes':'No'
+
+                                td.text-end
+                                    button.btn.btn-outline-danger.btn-xs.delete-btn.mx-2(
+                                        role="button",
+                                        url=`/question/${question.id}`,
+                                        data-back=`/survey/${question.survey_id}/edit`
+                                        data-bs-toggle='tooltip'
+                                        title='Delete Question'
+                                        disabled=survey.published
+                                    )
+                                        i.fas.fa-trash.fa-fw
+.row.my-2
+    .col
+        button.btn.btn-primary(type="submit")= survey.id?'Update':'Create'
+        a.btn.btn-link(href="/survey") Cancel

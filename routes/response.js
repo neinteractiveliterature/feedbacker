@@ -52,7 +52,7 @@ async function showSurvey(req, res, next){
             if (question_response){
                 return question_response.value;
             } else {
-                question_response = response.responses[`q-${questionId}`]
+                question_response = response.responses[`q-${questionId}`];
                 if (question_response) {
                     return question_response;
                 } else {

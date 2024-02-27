@@ -10,6 +10,7 @@ const _ = require('underscore');
 const moment = require('moment');
 const methodOverride = require('method-override');
 const redis = require('redis');
+const {marked} = require('marked');
 const passport = require('passport');
 const OAuth2Strategy = require('passport-oauth2').Strategy;
 
@@ -24,7 +25,7 @@ const indexRouter = require('./routes/index');
 const surveyRouter = require('./routes/survey');
 const feedbackRouter = require('./routes/feedback');
 const responseRouter = require('./routes/response');
-//const reportsRouter = require('./routes/reports');
+const questionRouter = require('./routes/question');
 
 const app = express();
 
@@ -175,6 +176,7 @@ app.use(function(req, res, next){
     res.locals.title = config.get('app.name');
     res.locals._ = _;
     res.locals.moment = moment;
+    res.locals.marked = marked;
     res.locals.humanize = surveyHelper.humanize;
     res.locals.teamMembers = surveyHelper.teamMembers;
     res.locals.activeUser = req.user;
@@ -188,7 +190,7 @@ app.use('/', indexRouter);
 app.use('/survey', surveyRouter);
 app.use('/feedback', feedbackRouter);
 app.use('/response', responseRouter);
-//app.use('/reports', reportsRouter);
+app.use('/question', questionRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

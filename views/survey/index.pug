@@ -1,7 +1,7 @@
 extends ../layout
 
 block content
-    // if (checkPermission('staff'))
+    if (checkPermission('staff'))
         a.btn.btn-success.mb-2( href='/survey/new')
             span.fa.fa-plus
             |  New Survey
@@ -35,7 +35,7 @@ block content
 
                                 .col.text-end
                                     if survey.created_by === activeUser.id || checkPermission('staff')
-                                        //a.btn.btn-sm.btn-outline-dark.mx-1(href=`/survey/${survey.id}/edit`)
+                                        a.btn.btn-sm.btn-outline-dark.mx-1(href=`/survey/${survey.id}/edit`)
                                             i.fas.fa-edit.fa-fw.me-1
                                             | Edit Survey
                                     if survey.responses.length

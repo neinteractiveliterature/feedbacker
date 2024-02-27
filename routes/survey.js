@@ -101,11 +101,13 @@ function showNew(req, res, next){
     res.locals.survey = {
         name: null,
         questions: [],
+        base_url: null,
+        published: false
     };
     res.locals.breadcrumbs = {
         path: [
             { url: '/', name: 'Home'},
-            { url: '/surveys', name: 'Surveys'},
+            { url: '/survey', name: 'Surveys'},
         ],
         current: 'New'
     };
@@ -115,75 +117,106 @@ function showNew(req, res, next){
         res.locals.survey = req.session.surveyData;
         delete req.session.surveyData;
     }
-    res.render('surveys/new');
+    res.render('survey/new');
 }
-function showEdit(req, res, next){
+
+async function showEdit(req, res, next){
     const id = req.params.id;
     res.locals.csrfToken = req.csrfToken();
 
-
-    req.models.surveys.get(id, function(err, survey){
-        if (err) { return next(err); }
+    try{
+        const survey = await req.models.survey.get(id);
+        if (!survey){
+            req.flash('error', 'Invalid Survey');
+            return req.redirect('/survey');
+        }
+        res.locals.breadcrumbs = {
+            path: [
+                { url: '/', name: 'Home'},
+                { url: '/survey', name: 'Surveys'},
+            ],
+            current: 'Edit: ' + survey.name
+        };
         res.locals.survey = survey;
         if (_.has(req.session, 'surveyData')){
             res.locals.survey = req.session.surveyData;
             delete req.session.surveyData;
         }
-        res.locals.breadcrumbs = {
-            path: [
-                { url: '/', name: 'Home'},
-                { url: '/surveys', name: 'Surveys'},
-            ],
-            current: 'Edit: ' + survey.name
-        };
+        res.render('survey/edit');
 
-        res.render('surveys/edit');
-    });
+    } catch(err){
+        next(err);
+    }
 }
 
-function create(req, res, next){
+async function create(req, res, next){
     const survey = req.body.survey;
 
     req.session.surveyData = survey;
 
-    surveyHelper.createSurvey(survey, function(err, id){
-        if (err) {
-            req.flash('error', err.toString());
-            return res.redirect('/survey/new');
-        }
+    if (!_.has(survey, 'published')){
+        survey.published = false;
+    }
+
+    survey.updated = new Date();
+    survey.created_by = req.user.id;
+
+    try {
+        await req.models.survey.create(survey);
+        req.flash('success', `Created Survey: ${survey.name}`);
         delete req.session.surveyData;
-        req.flash('success', 'Created Survey ' + survey.name);
         res.redirect('/survey');
-    });
+    } catch(err){
+        req.flash('error', err.toString());
+        return res.redirect('/survey/new');
+    }
 }
 
-function update(req, res, next){
+async function update(req, res, next){
     const id = req.params.id;
     const survey = req.body.survey;
+
     req.session.surveyData = survey;
 
-    req.models.surveys.get(id, function(err, current){
-        if (err) { return next(err); }
+    if (!_.has(survey, 'published')){
+        survey.published = false;
+    }
+    survey.updated = new Date();
 
-        surveyHelper.updateSurvey(id, survey, function(err){
-            if (err){
-                req.flash('error', err.toString());
-                return (res.redirect('/surveys/'+id));
-            }
-            delete req.session.furnitureData;
-            req.flash('success', 'Updated Surveys ' + survey.name);
-            res.redirect('/surveys');
-        });
-    });
+    try{
+        const current = await req.models.survey.get(id);
+        if (!current){
+            req.flash('error', 'Invalid Survey');
+            return req.redirect('/survey');
+        }
+
+        for (const field of ['created', 'created_by']){
+            survey[field] = current[field];
+        }
+
+        await req.models.survey.update(id, survey);
+        delete req.session.surveyData;
+        req.flash('success', `Updated Survey: ${survey.name}`);
+        res.redirect('/survey');
+    } catch(err){
+        next(err);
+    }
 }
 
-function remove(req, res, next){
+async function remove(req, res, next){
     const id = req.params.id;
-    req.models.surveys.delete(id, function(err){
-        if (err) { return next(err); }
-        req.flash('success', 'Removed Survey');
-        res.redirect('/surveys');
-    });
+    try{
+        const current = await req.models.survey.get(id);
+        if (!current){
+            req.flash('error', 'Invalid Survey');
+            return req.redirect('/survey');
+        }
+        await req.models.survey.delete(id);
+        req.flash('success', `Removed Survey: ${current.name}`);
+        res.redirect('/survey');
+    } catch(err){
+        next(err);
+    }
 }
 
 const router = express.Router();

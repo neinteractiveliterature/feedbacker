@@ -1,0 +1,38 @@
+input(type='hidden' name='question[survey_id]' value=question.survey_id)
+.row.my-2
+    .col
+        label.control-label(for="question_question") Question
+        input.form-control#question_name(type="text" placeholder="Question" name="question[question]" value=question.question required)
+        div.invalid-feedback Please choose a valid question
+
+.row.my-2
+    .col
+        label.control-label(for="question_type") Type
+        select.form-select.select2#question_type(
+            data-placeholder='Question Type'
+            name='question[type]'
+            required=true
+        )
+            option
+            each type in ['shorttext', 'text', 'boolean', 'scale', 'dropdown', 'events']
+                option(value=type selected=question.type===type )= type
+
+    .col
+        .form-check.form-switch
+            input.form-check-input#question_required(type="checkbox", name="question[required]" checked=question.required)
+            label.form-check-label(for="question_required") Required
+
+
+.row.my-2
+    .col
+        +markdownEditor('Description', 'question_description', 'question[description]', 3, 100, question.description, true)
+
+.row.my-3
+    .col
+        label.control-label(for="question_config") Configuration
+        +jsonEditor('question_config', 'question[config]', 3, 200, question.config)
+
+.row.my-2
+    .col
+        button.btn.btn-primary(type="submit")= question.id?'Update':'Create'
+        a.btn.btn-link(href=`/survey/${question.survey_id}/edit`) Cancel
