@@ -18,6 +18,7 @@ const models = require('./lib/models');
 
 const Intercode = require('./lib/intercode');
 const permission = require('./lib/permission');
+const database = require('./lib/database');
 
 const surveyHelper = require('./lib/survey-helper');
 
@@ -71,34 +72,47 @@ const sessionConfig = {
     resave: false,
 };
 
-if (config.get('app.sessionType') === 'redis'){
-    const RedisStore = require('connect-redis').default;
+switch (config.get('app.sessionType')){
+    case 'redis': {
+        const RedisStore = require('connect-redis').default;
 
-    let redisClient = null;
-    if (config.get('app.redis.url')){
-        const options = {
-            url: config.get('app.redis.url')
-        };
-        if (config.get('app.redis.tls')){
-            options.tls = {rejectUnauthorized: false};
+        let redisClient = null;
+        if (config.get('app.redis.url')){
+            const options = {
+                url: config.get('app.redis.url')
+            };
+            if (config.get('app.redis.tls')){
+                options.tls = {rejectUnauthorized: false};
+            }
+            redisClient = redis.createClient(options);
+        } else {
+            redisClient = redis.createClient();
         }
-        redisClient = redis.createClient(options);
-    } else {
-        redisClient = redis.createClient();
+        redisClient.on('connect', function() {
+            console.log('Using redis for sessions');
+        });
+        redisClient.on('error', err => {
+            console.log('Error ' + err);
+        });
+
+        (async() => {
+            await redisClient.connect().catch(console.error);
+        })();
+
+        sessionConfig.store = new RedisStore({ client: redisClient });
+        sessionConfig.resave = true;
+        break;
     }
-    redisClient.on('connect', function() {
-        console.log('Using redis for sessions');
-    });
-    redisClient.on('error', err => {
-        console.log('Error ' + err);
-    });
 
-    (async() => {
-        await redisClient.connect().catch(console.error);
-    })();
-
-    sessionConfig.store = new RedisStore({ client: redisClient });
-    sessionConfig.resave = true;
+    case 'postgresql': {
+        const pgSession = require('connect-pg-simple')(session);
+        sessionConfig.store = new pgSession({
+            pool: database.pool,
+            tableName: 'session'
+        });
+        console.log('Using postgresql for sessions');
+        break;
+    }
 }
 
 app.use(session(sessionConfig));
