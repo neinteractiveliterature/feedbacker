@@ -58,7 +58,8 @@ mixin questionSummaryBoolean(question, responses)
                 }
             }
         }
-    p #{Math.round(positiveResponses / totalResponses) * 100}%  of #{totalResponses} Responses.
+    if totalResponses
+        p #{Math.round(positiveResponses / totalResponses) * 100}%  of #{totalResponses} Responses.
 
 mixin questionSummaryScale(question, responses)
     -

@@ -17,6 +17,8 @@ async function showSurvey(req, res, next){
         }
         let response = await req.models.response.findOne({survey_id: surveyId, user_id: req.user.id});
 
+
+
         if (!response){
             const responseData = {
                 survey_id: surveyId,
@@ -36,15 +38,26 @@ async function showSurvey(req, res, next){
             ],
             current: res.locals.survey.name
         };
+        if (req.session.responseData){
+            response = req.session.responseData;
+            response.feedback = await req.models.feedback.find({response_id: response.id});
+            delete req.session.responseData;
+        }
 
         res.locals.response = response;
+
         res.locals.csrfToken = req.csrfToken();
-        res.locals.getValue = function(question_id){
-            const question_response = _.findWhere(response.responses, {id: question_id});
+        res.locals.getValue = function(questionId){
+            let question_response = _.findWhere(response.responses, {id: questionId});
             if (question_response){
                 return question_response.value;
             } else {
-                return null;
+                question_response = response.responses[`q-${questionId}`]
+                if (question_response) {
+                    return question_response;
+                } else {
+                    return null;
+                }
             }
         };
 
