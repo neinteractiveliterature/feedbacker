@@ -8,6 +8,7 @@ const models = {
 const tableFields = [
     'id',
     'name',
+    'description',
     'base_url',
     'created_by',
     'created',

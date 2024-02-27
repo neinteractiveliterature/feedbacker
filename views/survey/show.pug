@@ -14,6 +14,12 @@ block content
             .badge.text-bg-success
                 i.fas.fa-check-circle.me-1
                 | Completed
+        if survey.description
+            .row.my-2
+                .col
+                    .card
+                        .card-body!=marked.parse(survey.description,  {breaks: true})
+
         .row.mt-2
             .col-md
                 .form-check.form-switch

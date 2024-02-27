@@ -12,6 +12,10 @@
 
 .row.my-2
     .col
+        +markdownEditor('Description', 'survey_description', 'survey[description]', 3, 100, survey.description, true)
+
+.row.my-2
+    .col
         .form-check.form-switch
             input.form-check-input#survey_published(type="checkbox", name="survey[published]" checked=survey.published)
             label.form-check-label(for="survey_published") Publish Survey
