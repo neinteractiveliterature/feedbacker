@@ -62,6 +62,7 @@ mixin questionDropdown(question)
     select.form-select.select2.question(
         data-placeholder=question.config.placeholder
         name=`response[responses][q-${question.id}]`
+        id='question-' + question.id
         disabled=response.complete
         required=question.required
         )
@@ -113,9 +114,10 @@ mixin questionEvents()
     .table-responsive
         table.table.table-sm.table-striped
             thead
-                th Category
-                th Event Name
-                th.text-end Actions
+                tr
+                    th Category
+                    th Event Name
+                    th.text-end Actions
             tbody
                 for userEvent in userEvents
                     -

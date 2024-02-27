@@ -29,6 +29,14 @@ async function showSurvey(req, res, next){
             response = await req.models.response.get(responseId);
         }
 
+        res.locals.breadcrumbs = {
+            path: [
+                { url: '/', name: 'Home'},
+                { url: '/survey', name: 'Surveys'},
+            ],
+            current: res.locals.survey.name
+        };
+
         res.locals.response = response;
         res.locals.csrfToken = req.csrfToken();
         res.locals.getValue = function(question_id){
@@ -106,7 +114,7 @@ async function getSignupsApi(req, res, next){
         });
         userEvents = userEvents.sort((a, b) => {
             if (a.event.event_category.name != b.event.event_category.name){
-                return a.event.event_category.name.localeCompare(b.event.event_category.name)
+                return a.event.event_category.name.localeCompare(b.event.event_category.name);
             }
             return a.event.title.localeCompare(b.event.title);
         });

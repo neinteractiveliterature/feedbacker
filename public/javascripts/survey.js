@@ -154,7 +154,7 @@ async function loadSignups(){
         userEvents : (await signupsResult.json()).userEvents,
         disabled: complete === 'true'
     };
-    console.log(data)
+    console.log(data);
 
     $('#questionEvents').html(signupslistTemplate(data));
     $('#signupsLoading').hide();

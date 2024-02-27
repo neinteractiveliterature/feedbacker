@@ -11,7 +11,9 @@ block content
         input#base-url(type="hidden" name='survey[base_url]' value=survey.base_url)
         input#response-complete(type='hidden' value=''+response.complete name='complete')
         if response.complete
-            .badge.text-bg-success Completed
+            .badge.text-bg-success
+                i.fas.fa-check-circle.me-1
+                | Completed
         .row.my-2
             .col
                 | Filling out survey as #{activeUser.name}
@@ -34,5 +36,5 @@ append scripts
     script(src='/javascripts/templates/feedback/modalNewForm.js')
     script(src='/javascripts/templates/survey/signupsList.js')
     script(src='/javascripts/validator.js')
-    script(src='/javascripts/feedback.js')
+    script(src='/javascripts/survey.js')
 

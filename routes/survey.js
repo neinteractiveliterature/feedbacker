@@ -37,11 +37,11 @@ async function showFeedback(req, res, next){
         const survey = await req.models.survey.get(surveyId);
         if (!survey){
             req.flash('error', 'Survey not found');
-            return res.redirect('/survey')
-        };
+            return res.redirect('/survey');
+        }
         if (!survey.published){
             req.flash('error', 'Survey not published');
-            return res.redirect('/survey')
+            return res.redirect('/survey');
         }
         res.locals.feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
         res.locals.survey = survey;
@@ -66,14 +66,21 @@ async function showResponses(req, res, next){
         const survey = await req.models.survey.get(surveyId);
         if (!survey){
             req.flash('error', 'Survey not found');
-            return res.redirect('/survey')
-        };
+            return res.redirect('/survey');
+        }
         if (!survey.published){
             req.flash('error', 'Survey not published');
-            return res.redirect('/survey')
+            return res.redirect('/survey');
         }
         res.locals.responses = await surveyHelper.getResponses(survey, req.user, req.intercode);
         res.locals.survey = survey;
+        const events = (await req.intercode.getEvents()).filter(event => {
+            if (event.event_category.name === 'Volunteer event') { return false; }
+            if (event.event_category.name === 'Con services') { return false; }
+            return true;
+        });
+        res.locals.events = _.indexBy(events, 'id');
+
         res.locals.breadcrumbs = {
             path: [
                 { url: '/', name: 'Home'},
