@@ -104,6 +104,7 @@ mixin questionScale(question)
                 label.form-check-label(for=`question-${question.id}-5`) Strongly Positive (5)
 
 mixin questionEventsStub(question)
+    label.control-label(for="questionEvents")=question.question
     #questionEvents(style='display:none')
     .col-sm-6.offset-sm-3.text-center#signupsLoading
         .spinner-border.m-5(role="status" style="width: 3rem; height: 3rem;")
@@ -111,71 +112,75 @@ mixin questionEventsStub(question)
 
 
 mixin questionEvents()
-    .table-responsive
-        table.table.table-sm.table-striped
-            thead
-                tr
-                    th Category
-                    th Event Name
-                    th.text-end Actions
-            tbody
-                for userEvent in userEvents
-                    -
-                        const event = userEvent.event
-                        if (!event) { continue }
-                        const feedback = userEvent.feedback
+    .row.mb-1
+        .col.px-2
+            .table-responsive
+                table.table.table-sm.table-striped
+                    thead
+                        tr
+                            th Category
+                            th Event Name
+                            th.text-end Actions
+                    tbody
+                        for userEvent in userEvents
+                            -
+                                const event = userEvent.event
+                                if (!event) { continue }
+                                const feedback = userEvent.feedback
 
-                        let hasFeedback = false;
-                        if (feedback){
-                            if (feedback.recommend && feedback.recommend !== -1){
-                                hasFeedback = true;
-                            } else if (feedback.gm && feedback.gm !== ''){
-                                hasFeedback = true;
-                            } else if (feedback.concom && feedback.concom !== ''){
-                                hasFeedback = true;
-                            }
+                                let hasFeedback = false;
+                                if (feedback){
+                                    if (feedback.recommend && feedback.recommend !== -1){
+                                        hasFeedback = true;
+                                    } else if (feedback.gm && feedback.gm !== ''){
+                                        hasFeedback = true;
+                                    } else if (feedback.concom && feedback.concom !== ''){
+                                        hasFeedback = true;
+                                    }
 
-                        }
-                    tr
-                        td
-                            small= event.event_category.name
-                        td= event.title
-                            if hasFeedback
-                                .badge.text-bg-success.ms-2
-                                    i.fas.fa-check-circle.me-1
-                                    | Feedback Provided
-                        td.text-end
-                            button.btn.btn-sm.btn-outline-primary.feedback-edit(
-                                role='button'
-                                data-eventid=event.id
-                                disabled=disabled
-                            )
-                                i.fas.fa-edit.me-1.feedback-icon
-                                if hasFeedback
-                                    | Edit Feedback
-                                else
-                                    | Provide Feedback
-                            button.btn.btn-sm.btn-outline-danger.ms-1.feedback-remove(
-                                role='button'
-                                data-eventid= event.id
-                                data-toggle='tooltip'
-                                title="Remove from List"
-                                disabled=disabled
-                            )
-                                i.fas.fa-trash.fa-fw.feedback-icon
+                                }
+                            tr
+                                td
+                                    small= event.event_category.name
+                                td= event.title
+                                    if hasFeedback
+                                        .badge.text-bg-success.ms-2.d-md-inline
+                                            i.fas.fa-check-circle.me-1
+                                            | Feedback Provided
+                                td.text-end
+                                    .btn-group
+                                        button.btn.btn-sm.btn-outline-primary.feedback-edit.d-inline-block(
+                                            role='button'
+                                            data-eventid=event.id
+                                            disabled=disabled
+                                            title=hasFeedback?'Edit Feedback':'Provide Feedback'
+                                            data-bs-toggle='tooltip'
+                                        )
+                                            i.fas.fa-edit.feedback-icon
+                                            if hasFeedback
+                                                .d-none.d-lg-inline.ms-1 Edit Feedback
+                                            else
+                                                .d-none.d-lg-inline.ms-1 Provide Feedback
+                                        button.btn.btn-sm.btn-outline-danger.ms-1.feedback-remove.d-inline-block(
+                                            role='button'
+                                            data-eventid= event.id
+                                            data-bs-toggle='tooltip'
+                                            title="Remove from List"
+                                            disabled=disabled
+                                        )
+                                            i.fas.fa-trash.fa-fw.feedback-icon
 
-            tfoot
-                tr
-                    td(colspan=3)
-                        .input-group.my-2.eventPicker
-                            select.form-select.select2.event-select(data-placeholder='Select an event to add')
-                                option
-                                for event in events
-                                    option(value=event.id)= event.event_category.name + ': '+ event.title
+    .row.mb-2
+        .col.px-2
+            .input-group.eventPicker
+                select.form-select.select2.event-select(data-placeholder='Select an event to add')
+                    option
+                    for event in events
+                        option(value=event.id)= event.event_category.name + ': '+ event.title
 
-                            button.btn.btn-outline-success.feedback-add( type="button")
-                                span.fa.fa-plus
-                                |  Add Event
+                button.btn.btn-outline-success.feedback-add( type="button")
+                    span.fa.fa-plus
+                    |  Add Event
 
 mixin surveyModal()
     .modal.modal-fullscreen-lg-down.fade#surveyModal(role="dialog" tabindex="-1" aria-labelledby="popupModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false")

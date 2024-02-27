@@ -163,7 +163,7 @@ async function loadSignups(){
     $('.feedback-edit').on('click', showEventFeedback);
     $('.feedback-remove').confirmation({title: 'Remove from List?'}).on('click', removeEventFeedback);
     $('.feedback-add').on('click', addEventFeedback);
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-bs-toggle="tooltip"]').tooltip();
     $('#questionEvents').find('.select2').select2({
         theme:'bootstrap-5',
         minimumResultsForSearch: 6,
