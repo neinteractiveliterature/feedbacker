@@ -10,6 +10,7 @@ $(function () {
     $('#survey-unsubmit').confirmation({'title':'Reopen this Survey Response?'});
 
     $('#surveyModal').find('.save-btn').on('click', submitFeedbackModal);
+    $('#response-anonymous').on('change', displaySurveyUserName).trigger('change');
     loadSignups();
 });
 
@@ -168,4 +169,16 @@ async function loadSignups(){
         minimumResultsForSearch: 6,
         width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style'
     });
+}
+
+function displaySurveyUserName(e){
+    const $this = $(this);
+    const checked = $this.is(':checked');
+    if (checked){
+        $('#survey-user').hide();
+        $('#survey-user-anon').show();
+    } else {
+        $('#survey-user').show();
+        $('#survey-user-anon').hide();
+    }
 }

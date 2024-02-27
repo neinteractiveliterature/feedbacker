@@ -14,9 +14,27 @@ block content
             .badge.text-bg-success
                 i.fas.fa-check-circle.me-1
                 | Completed
-        .row.my-2
+        .row.mt-2
             .col
-                | Filling out survey as #{activeUser.name}
+                .form-check.form-switch
+                    input.form-check-input#response-anonymous(
+                        type="checkbox"
+                        name='response[anonymous]'
+                        checked=response.anonymous
+                        disabled=response.complete
+                    )
+                    label.form-check-label(for="response-anonymous") Anonymous Response
+            .col
+                | Filling out survey as
+                span.px-3.py-1.rounded.ms-2.text-bg-primary#survey-user
+                    i.fas.fa-user.me-1
+                    | #{activeUser.name}
+                span.px-3.py-1.rounded.ms-2.text-bg-success#survey-user-anon(style='display:none')
+                    i.fas.fa-user-secret.me-1
+                    i Anonymous
+        .row.mb-2
+            .col
+                .form-text If this an anonymous response, your name will not be displayed to convention staff.  You may still chose to share your name on comments you leave for GMs/event runners.
         for question in survey.questions
             .row.my-2
                 .col

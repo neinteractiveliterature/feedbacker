@@ -208,6 +208,12 @@ async function saveResponse(req, res, next){
             }
         }
         current.updated = new Date();
+        if (response.anonymous) {
+            current.anonymous = true;
+        } else {
+            current.anonymous = false;
+
+        }
         if (response.action === 'submit'){
             current.complete = true;
         } else if (response.action === 'unsubmit'){
