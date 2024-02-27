@@ -63,3 +63,4 @@ typings/
 *.todo
 .DS_Store
 public/javascripts/templates
+*.toml
