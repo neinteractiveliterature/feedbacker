@@ -18,7 +18,7 @@ block content
             .row.my-2
                 .col
                     .card
-                        .card-body!=marked.parse(survey.description,  {breaks: true})
+                        .card-body!=marked.parseInline(survey.description,  {breaks: true})
 
         .row.mt-2
             .col-md
