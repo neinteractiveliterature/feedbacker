@@ -60,6 +60,7 @@ mixin questionBoolean(question)
             .form-text!=marked.parse(question.description,  {breaks: true})
 
 mixin questionDropdown(question)
+    - const value = getValue(question.id)
     label.control-label(for="question-" + question.id)=question.question
     if question.description
         .form-text!=marked.parse(question.description,  {breaks: true})
@@ -72,39 +73,40 @@ mixin questionDropdown(question)
         )
         option
         each option, idx in question.config.options
-            option(value=idx selected=Number(getValue(question.id))===idx )= option
+            option(value=idx selected=value&&Number(value)===idx )= option
 
 mixin questionScale(question)
     label.control-label(for="question-" + question.id)=question.question
     if question.description
         .form-text!=marked.parse(question.description,  {breaks: true})
+    - const value = getValue(question.id)
 
     div(id=`question-${question.id}`)
         if (!questionrequired)
             .form-check.form-check-inline.mx-3.px-2.border-end
-                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=-1 id=`question-${question.id}-nr` checked=getValue(question.id)===null || Number(getValue(question.id)) === -1 disabled=response.complete)
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=-1 id=`question-${question.id}-nr` checked=value===null || value===-1 disabled=response.complete)
                 label.form-check-label(for=`question-${question.id}-nr`) No Response
         if question.config && question.config.options
             each option, idx in question.config.options
                 .form-check.form-check-inline.mx-2
-                    input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=idx id=`question-${question.id}-${idx}` checked=Number(getValue(question.id))===idx  disabled=response.complete)
+                    input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=idx id=`question-${question.id}-${idx}` checked=value&&value===idx disabled=response.complete)
                     label.form-check-label(for=`question-${question.id}-${idx}`)= option
 
         else
             .form-check.form-check-inline.mx-2
-                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=1 id=`question-${question.id}-1` checked=Number(getValue(question.id))===1  disabled=response.complete)
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=1 id=`question-${question.id}-1` checked=value&&Number(value)===1 disabled=response.complete)
                 label.form-check-label(for=`question-${question.id}-1`) Strong Negative (1)
             .form-check.form-check-inline.mx-2
-                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=2 id=`question-${question.id}-2` checked=Number(getValue(question.id))===2  disabled=response.complete)
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=2 id=`question-${question.id}-2` checked=value&&Number(value)===2  disabled=response.complete)
                 label.form-check-label(for=`question-${question.id}-2`) Negative (2)
             .form-check.form-check-inline.mx-2
-                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=3 id=`question-${question.id}-3` checked=Number(getValue(question.id))===3  disabled=response.complete)
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=3 id=`question-${question.id}-3` checked=value&&Number(value)===3  disabled=response.complete)
                 label.form-check-label(for=`question-${question.id}-3`) Neutral (3)
             .form-check.form-check-inline.mx-2
-                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=4 id=`question-${question.id}-4` checked=Number(getValue(question.id))===4  disabled=response.complete)
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=4 id=`question-${question.id}-4` checked=value&&Number(value)===4  disabled=response.complete)
                 label.form-check-label(for=`question-${question.id}-4`) Positive (4)
             .form-check.form-check-inline.mx-2
-                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=5 id=`question-${question.id}-5` checked=Number(getValue(question.id))===5 disabled=response.complete)
+                input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=5 id=`question-${question.id}-5` checked=value&&Number(value)===5 disabled=response.complete)
                 label.form-check-label(for=`question-${question.id}-5`) Strongly Positive (5)
 
 mixin questionEventsStub(question)
