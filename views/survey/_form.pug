@@ -72,5 +72,10 @@ if survey.id
                                         i.fas.fa-trash.fa-fw
 .row.my-2
     .col
-        button.btn.btn-primary(type="submit")= survey.id?'Update':'Create'
+        button.btn.btn-primary.me-1(type="submit")= survey.id?'Update':'Create'
+        if !survey.published && survey.id
+            a.btn.btn-outline-primary.me-2(href=`/response/${survey.id}`)
+                fa.fas.fa-eye.me-1
+                | Preview Survey
+
         a.btn.btn-link(href="/survey") Cancel
