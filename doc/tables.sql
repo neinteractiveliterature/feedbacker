@@ -20,6 +20,7 @@ create table surveys (
 create table questions (
     id          serial,
     survey_id   int not null,
+    name        varchar(80) not null,
     question    varchar(255) not null,
     description text,
     type        varchar(20),

@@ -1,6 +1,13 @@
 input(type='hidden' name='question[survey_id]' value=question.survey_id)
 .row.my-2
     .col
+        label.control-label(for="question_name") Name
+        input.form-control#question_name(type="text" placeholder="Name" name="question[name]" value=question.name required)
+        .form-text Internal name for the question, only used on exports and survey builder
+        div.invalid-feedback Please choose a valid name
+
+.row.my-2
+    .col
         label.control-label(for="question_question") Question
         input.form-control#question_name(type="text" placeholder="Question" name="question[question]" value=question.question required)
         div.invalid-feedback Please choose a valid question
@@ -14,7 +21,7 @@ input(type='hidden' name='question[survey_id]' value=question.survey_id)
             required=true
         )
             option
-            each type in ['shorttext', 'text', 'boolean', 'scale', 'dropdown', 'events']
+            each type in ['shorttext', 'text', 'boolean', 'scale', 'dropdown', 'events', 'header']
                 option(value=type selected=question.type===type )= type
 
     .col

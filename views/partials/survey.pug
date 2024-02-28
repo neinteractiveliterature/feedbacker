@@ -12,6 +12,8 @@ mixin questionDisplay(question)
             +questionDropdown(question)
         when 'events'
             +questionEventsStub(question)
+        when 'header'
+            +questionHeader(question)
 
 
 mixin questionShorttext(question)
@@ -114,6 +116,9 @@ mixin questionEventsStub(question)
         .spinner-border.m-5(role="status" style="width: 3rem; height: 3rem;")
             .visually-hidden Table is Loading
 
+mixin questionHeader(question)
+    h4(class=question.config && question.config.border?'border-top pt-2':'')=question.question
+    .form-text!=marked.parse(question.description,  {breaks: true})
 
 mixin questionEvents()
     .row.mb-1

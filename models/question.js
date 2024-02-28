@@ -5,6 +5,7 @@ const Model = require('../lib/Model');
 const tableFields = [
     'id',
     'survey_id',
+    'name',
     'question',
     'description',
     'type',
@@ -21,6 +22,9 @@ const Question = new Model('questions', tableFields, {
 module.exports = Question;
 
 function validate(data){
+    if (! validator.isLength(data.name, 2, 255)){
+        return false;
+    }
     if (! validator.isLength(data.question, 2, 255)){
         return false;
     }

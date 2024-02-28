@@ -41,7 +41,8 @@ if survey.id
                             th
                             th.sort-handle
                             th Order
-                            th(data-priority="1") Question
+                            th(data-priority="1") Name
+                            th Question
                             th Type
                             th Required?
                             th
@@ -52,7 +53,8 @@ if survey.id
                                 td.dtr-control
                                 td= question.id
                                 td= question.display_order
-                                td= question.question
+                                td= question.name
+                                td.text-truncate(style='max-width:150px')= question.question
                                 td= question.type
 
                                 td
