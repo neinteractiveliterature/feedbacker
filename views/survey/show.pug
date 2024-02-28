@@ -63,8 +63,11 @@ block content
                                 | Reopen Response
                     else
                         button.btn.btn-secondary.me-2#survey-none(type="submit" name='response[action]' value='none' disabled=true)
-                                i.far.fa-save.me-1
-                                | Survey in Preview
+                            i.far.fa-save.me-1
+                            | Survey in Preview
+                        a.btn.btn-secondary.me-2(href=`/survey/${survey.id}/edit`)
+                            i.fas.fa-edit.fa-fw.me-1
+                            | Edit Survey
 
                     a.btn.btn-link.mx-3(href="/")
                         i.far.fa-times-circle.me-1
