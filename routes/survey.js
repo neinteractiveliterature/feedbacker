@@ -21,6 +21,7 @@ async function list(req, res, next){
             survey.feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
             return survey;
         });
+         res.locals.title += ` - Survey List`;
         res.render('survey/list', { pageTitle: 'Surveys' });
     } catch (err){
         next(err);
@@ -52,7 +53,7 @@ async function showFeedback(req, res, next){
             ],
             current: `Event feedback from ${survey.name}`
         };
-
+        res.locals.title += ` - Feedback - ${survey.name}`;
         res.render('survey/feedback', {pageTitle: `Event feedback from ${survey.name}`});
 
     } catch(err){
@@ -88,7 +89,7 @@ async function showResponses(req, res, next){
             ],
             current: `Responses from ${survey.name}`
         };
-
+        res.locals.title += ` - Responses - ${survey.name}`;
         res.render('survey/responses', {pageTitle: `Responses from ${survey.name}`});
 
     } catch(err){
@@ -117,6 +118,7 @@ function showNew(req, res, next){
         res.locals.survey = req.session.surveyData;
         delete req.session.surveyData;
     }
+    res.locals.title += ` - New Survey}`;
     res.render('survey/new');
 }
 
@@ -142,6 +144,7 @@ async function showEdit(req, res, next){
             res.locals.survey = req.session.surveyData;
             delete req.session.surveyData;
         }
+        res.locals.title += ` - Edit ${survey.name}`;
         res.render('survey/edit');
 
     } catch(err){

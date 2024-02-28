@@ -60,7 +60,7 @@ async function showSurvey(req, res, next){
                 }
             }
         };
-
+        res.locals.title += ` - ${res.locals.survey.name}`;
         res.render('survey/show', { pageTitle: res.locals.survey.name });
     } catch(err){
         next(err);
