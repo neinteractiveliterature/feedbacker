@@ -21,7 +21,7 @@ async function list(req, res, next){
             survey.feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
             return survey;
         });
-        res.render('survey/index', { pageTitle: 'Surveys' });
+        res.render('survey/list', { pageTitle: 'Surveys' });
     } catch (err){
         next(err);
     }

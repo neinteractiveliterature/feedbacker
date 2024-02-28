@@ -24,7 +24,7 @@ async function showApi(req, res, next){
             return res.status(403).json({success:false, error: 'not permitted'});
         }
         const survey = await req.models.survey.get(response.survey_id);
-        if (!survey.published){
+        if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
 
@@ -70,7 +70,7 @@ async function createApi(req, res, next){
             return res.status(401).json({success:false, error: 'no survey id specified'});
         }
         const survey = await req.models.survey.get(response.survey_id);
-        if (!survey.published){
+        if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
         await req.models.feedback.create(feedback);
@@ -97,7 +97,7 @@ async function updateApi(req, res, next){
             return res.status(403).json({success:false, error: 'not permitted'});
         }
         const survey = await req.models.survey.get(current.survey_id);
-        if (!survey.published){
+        if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
         feedback.response_id = current.response_id;
@@ -136,7 +136,7 @@ async function removeSignupApi(req, res, next){
             return res.status(403).json({success:false, error: 'not permitted'});
         }
         const survey = await req.models.survey.get(response.survey_id);
-        if (!survey.published){
+        if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
 
@@ -175,7 +175,7 @@ async function addSignupApi(req, res, next){
             return res.status(403).json({success:false, error: 'not permitted'});
         }
         const survey = await req.models.survey.get(response.survey_id);
-        if (!survey.published){
+        if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
 

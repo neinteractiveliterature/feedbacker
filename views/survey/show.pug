@@ -49,17 +49,23 @@ block content
         nav.navbar.sticky-bottom.bg-light.border-body.rounded.border.mx-lg-4
             .container-fluid.px-2.py-1
                 .save-buttons
-                    if !response.complete
-                        button.btn.btn-secondary.me-2#survey-save(type="submit" name='response[action]' value='save' disabled=response.complete)
-                            i.far.fa-save.me-1
-                            | Save Progress
-                        button.btn.btn-primary.mx-2#survey-submit(type="submit" name='response[action]' value='submit' disabled=response.complete)
-                            i.fas.fa-envelope.me-1
-                            | Submit Response
+                    if survey.published
+                        if !response.complete
+                            button.btn.btn-secondary.me-2#survey-save(type="submit" name='response[action]' value='save' disabled=response.complete)
+                                i.far.fa-save.me-1
+                                | Save Progress
+                            button.btn.btn-primary.mx-2#survey-submit(type="submit" name='response[action]' value='submit' disabled=response.complete)
+                                i.fas.fa-envelope.me-1
+                                | Submit Response
+                        else
+                            button.btn.btn-primary.me-2#survey-unsubmit(type="submit" name='response[action]' value='unsubmit' disabled=!response.complete)
+                                i.fas.fa-envelope-open-text.me-1
+                                | Reopen Response
                     else
-                        button.btn.btn-primary.me-2#survey-unsubmit(type="submit" name='response[action]' value='unsubmit' disabled=!response.complete)
-                            i.fas.fa-envelope-open-text.me-1
-                            | Reopen Response
+                        button.btn.btn-secondary.me-2#survey-none(type="submit" name='response[action]' value='none' disabled=true)
+                                i.far.fa-save.me-1
+                                | Survey in Preview
+
                     a.btn.btn-link.mx-3(href="/")
                         i.far.fa-times-circle.me-1
                         | Cancel
