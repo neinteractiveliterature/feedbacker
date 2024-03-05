@@ -9,6 +9,7 @@ block content
         input#survey-id(type="hidden" name='response[survey_id]' value=survey.id)
         input#response-id(type="hidden" name='response[id]' value=response.id)
         input#base-url(type="hidden" name='survey[base_url]' value=survey.base_url)
+        input#survey-published(type="hidden" name='published' value=''+survey.published)
         input#response-complete(type='hidden' value=''+response.complete name='complete')
         if response.complete
             .badge.text-bg-success
@@ -65,9 +66,10 @@ block content
                         button.btn.btn-secondary.me-2#survey-none(type="submit" name='response[action]' value='none' disabled=true)
                             i.far.fa-save.me-1
                             | Survey in Preview
-                        a.btn.btn-secondary.me-2(href=`/survey/${survey.id}/edit`)
-                            i.fas.fa-edit.fa-fw.me-1
-                            | Edit Survey
+                        if checkPermission('staff')
+                            a.btn.btn-secondary.me-2(href=`/survey/${survey.id}/edit`)
+                                i.fas.fa-edit.fa-fw.me-1
+                                | Edit Survey
 
                     a.btn.btn-link.mx-3(href="/")
                         i.far.fa-times-circle.me-1

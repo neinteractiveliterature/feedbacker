@@ -9,7 +9,7 @@ block content
         .col
             .list-group
                 for survey in surveys
-                    if survey.published || survey.created_by === activeUser.id || checkPermission('staff')
+                    if survey.published || survey.created_by === activeUser.id || checkPermission('Con Com')
                         .list-group-item.p-3
                             .row
                                 .col-auto
@@ -18,7 +18,7 @@ block content
                                         | (
                                         a(target="_blank" href=survey.base_url)= survey.convention.name
                                         | )
-                                    if survey.created_by === activeUser.id || checkPermission('staff')
+                                    if survey.created_by === activeUser.id || checkPermission('Con Com')
                                         if survey.published
                                             .badge.text-bg-success.ms-2 Active
                                         else
@@ -48,7 +48,8 @@ block content
                                             i.fas.fa-eye.fa-fw.me-1
                                             | View My Events' Responses
                                             span.badge.rounded-pill.text-bg-danger.position-absolute.top-0.start-100.translate-middle=_.flatten(_.pluck(survey.feedback, 'feedback')).length
-                                    if survey.published || (checkPermission('staff'))
+
+                                    if survey.published || checkPermission('Con Com')
                                         a.btn.btn-sm.btn-outline-primary.mx-1(href=`/response/${survey.id}`)
                                             if !survey.published
                                                 i.fas.fa-eye.fa-fw.me-1

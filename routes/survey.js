@@ -21,7 +21,7 @@ async function list(req, res, next){
             survey.feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
             return survey;
         });
-         res.locals.title += ` - Survey List`;
+        res.locals.title += ' - Survey List';
         res.render('survey/list', { pageTitle: 'Surveys' });
     } catch (err){
         next(err);
@@ -118,7 +118,7 @@ function showNew(req, res, next){
         res.locals.survey = req.session.surveyData;
         delete req.session.surveyData;
     }
-    res.locals.title += ` - New Survey}`;
+    res.locals.title += ' - New Survey}';
     res.render('survey/new');
 }
 

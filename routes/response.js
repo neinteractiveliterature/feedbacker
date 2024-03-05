@@ -11,7 +11,7 @@ async function showSurvey(req, res, next){
 
     try {
         res.locals.survey = await req.models.survey.get(surveyId);
-        if (!( res.locals.survey.published || res.locals.checkPermission('staff'))){
+        if (!( res.locals.survey.published || res.locals.checkPermission('Con Com'))){
             req.flash('error', 'Survey is not published');
             return res.redirect('/survey');
         }
@@ -79,7 +79,7 @@ async function getSignupsApi(req, res, next){
         if (!survey){
             return res.status(404).json({success:false, error:'Not a valid survey'});
         }
-        if (!( survey.published || res.locals.checkPermission('staff'))){
+        if (!( survey.published || res.locals.checkPermission('Con Com'))){
             return res.status(403).json({success:false, error:'Survey not published'});
         }
 
@@ -98,6 +98,7 @@ async function getSignupsApi(req, res, next){
                 return true;
             })
             .filter(signup => {return signup.state !== 'withdrawn';})
+            .filter(signup => {return signup.state !== 'waitlisted';})
             .map(signup => { return Number(signup.run.event.id);});
 
         if (response.feedback){
@@ -154,7 +155,7 @@ async function getEventsListApi(req, res, next){
         if (!survey){
             return res.status(404).json({success:false, error:'Not a valid survey'});
         }
-        if (!( survey.published || res.locals.checkPermission('staff'))){
+        if (!( survey.published || res.locals.checkPermission('Con Com'))){
             return res.status(403).json({success:false, error:'Survey not published'});
         }
 

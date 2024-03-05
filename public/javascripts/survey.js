@@ -150,10 +150,12 @@ async function loadSignups(){
     }
     const signupsResult = await fetch(`/response/${responseId}/signups`);
     const complete = $('#response-complete').val();
+    const published = $('#survey-published').val();
+
     const data = {
         events: eventList,
         userEvents : (await signupsResult.json()).userEvents,
-        disabled: complete === 'true'
+        disabled: complete === 'true' || published !== 'true'
     };
     console.log(data);
 
