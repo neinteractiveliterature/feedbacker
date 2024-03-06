@@ -18,6 +18,8 @@ mixin questionDisplay(question)
 
 mixin questionShorttext(question)
     label.control-label(for="question-" + question.id)=question.question
+    if question.description
+        .form-text!=marked.parse(question.description,  {breaks: true})
     input.form-control(
         type="text"
         name=`response[responses][q-${question.id}]`
@@ -26,9 +28,6 @@ mixin questionShorttext(question)
         required=question.required
         disabled=response.complete
         )
-    if question.description
-        .form-text!=marked.parse(question.description,  {breaks: true})
-
     div.invalid-feedback Please choose a valid value for this item
     
 
@@ -82,7 +81,7 @@ mixin questionScale(question)
 
     div(id=`question-${question.id}`)
         if (!questionrequired)
-            .form-check.form-check-inline.mx-3.px-2.border-end
+            .form-check.form-check-inline.mx-2.pe-2.border-end.d-block.d-md-inline
                 input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=-1 id=`question-${question.id}-nr` checked=value===null || value===-1 disabled=response.complete)
                 label.form-check-label(for=`question-${question.id}-nr`) No Response
         if question.config && question.config.options
