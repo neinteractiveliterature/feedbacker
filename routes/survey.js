@@ -69,7 +69,7 @@ async function showResponses(req, res, next){
             req.flash('error', 'Survey not found');
             return res.redirect('/survey');
         }
-        if (!survey.published){
+        if (!(survey.published || res.locals.checkPermission('Con Com'))){
             req.flash('error', 'Survey not published');
             return res.redirect('/survey');
         }

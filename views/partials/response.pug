@@ -4,19 +4,21 @@ mixin responseSummary(survey, responses)
         .col
             select.form-select.select2#question-results-select(data-placeholder="Question")
                 for question in survey.questions
-                    option(value=question.id)=question.question
+                    if question.type !== 'header'
+                        option(value=question.id)=question.question
         .col-md-2.text-end
             button.btn.btn-outline-primary.mx-1#prev-question-response(role="button" title='Previous' data-bs-toggle='tooltip' disabled='true')
                 i.fas.fa-arrow-left.me-1
             span.ms-1#current-question 1
             span.mx-1 of
-            span.me-1=survey.questions.length
+            span.me-1=survey.questions.filter(r => {return r.type !== 'header'}).length
 
             button.btn.btn-outline-primary.mx-1#next-question-response(role="button" title='Next' data-bs-toggle='tooltip')
                 i.fas.fa-arrow-right.ms-1
     #question-responses-container
         for question in survey.questions
-            +questionSummaryDisplay(question, responses)
+            if question.type !== 'header'
+                +questionSummaryDisplay(question, responses)
 
 
 
