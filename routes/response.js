@@ -6,6 +6,7 @@ const surveyHelper = require('../lib/survey-helper');
 const permission = require('../lib/permission');
 const shortid = require('shortid');
 
+
 async function showSurvey(req, res, next){
     const surveyId = req.params.surveyId;
 
@@ -169,13 +170,26 @@ async function getEventsListApi(req, res, next){
             }
             return true;
         });
+
         res.json({
             success: true,
-            events: _.sortBy(events, 'title')
+            events: events.sort(eventSorter)
         });
     } catch(err){
         next(err);
     }
+}
+
+function eventSorter(a, b){
+    const aCategory = a.event_category.name;
+    const bCategory = b.event_category.name;
+    if (aCategory !== bCategory){
+        return aCategory.localeCompare(bCategory);
+    }
+    const regex = /[^\w\d]*/g;
+    const aTitle = a.title.replace(regex, '');
+    const bTitle = b.title.replace(regex, '');
+    return aTitle.localeCompare(bTitle);
 }
 
 async function saveResponse(req, res, next){
