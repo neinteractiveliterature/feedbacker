@@ -19,7 +19,7 @@ mixin questionDisplay(question)
 mixin questionShorttext(question)
     label.control-label(for="question-" + question.id)=question.question
     if question.description
-        .form-text!=marked.parse(question.description,  {breaks: true})
+        .form-text!=marked.parseInline(question.description,  {breaks: true})
     input.form-control(
         type="text"
         name=`response[responses][q-${question.id}]`
@@ -34,7 +34,7 @@ mixin questionShorttext(question)
 mixin questionText(question)
     label.control-label(for="question-" + question.id)=question.question
     if question.description
-        .form-text!=marked.parse(question.description,  {breaks: true})
+        .form-text!=marked.parseInline(question.description,  {breaks: true})
     textarea.form-control(
         name=`response[responses][q-${question.id}]`
         id='question-' + question.id
@@ -55,13 +55,13 @@ mixin questionBoolean(question)
             )
         label.form-check-label(for="question-" + question.id)=question.question
         if question.description
-            .form-text!=marked.parse(question.description,  {breaks: true})
+            .form-text!=marked.parseInline(question.description,  {breaks: true})
 
 mixin questionDropdown(question)
     - const value = getValue(question.id)
     label.control-label(for="question-" + question.id)=question.question
     if question.description
-        .form-text!=marked.parse(question.description,  {breaks: true})
+        .form-text!=marked.parseInline(question.description,  {breaks: true})
     select.form-select.select2.question(
         data-placeholder=question.config.placeholder
         name=`response[responses][q-${question.id}]`
@@ -76,12 +76,12 @@ mixin questionDropdown(question)
 mixin questionScale(question)
     label.control-label(for="question-" + question.id)=question.question
     if question.description
-        .form-text!=marked.parse(question.description,  {breaks: true})
+        .form-text!=marked.parseInline(question.description,  {breaks: true})
     - const value = getValue(question.id)
 
     div(id=`question-${question.id}`)
         if (!questionrequired)
-            .form-check.form-check-inline.mx-2.pe-2.border-end.d-block.d-md-inline
+            .form-check.form-check-inline.mx-2.pe-2.border-end.d-block.d-md-inline-block
                 input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=-1 id=`question-${question.id}-nr` checked=value===null || value===-1 disabled=response.complete)
                 label.form-check-label(for=`question-${question.id}-nr`) No Response
         if question.config && question.config.options
@@ -110,7 +110,7 @@ mixin questionScale(question)
 mixin questionEventsStub(question)
     label.control-label(for="questionEvents")=question.question
     if question.description
-        .form-text!=marked.parse(question.description,  {breaks: true})
+        .form-text!=marked.parseInline(question.description,  {breaks: true})
     #questionEvents(style='display:none')
     .col-sm-6.offset-sm-3.text-center#signupsLoading
         .spinner-border.m-5(role="status" style="width: 3rem; height: 3rem;")
@@ -118,7 +118,7 @@ mixin questionEventsStub(question)
 
 mixin questionHeader(question)
     h4(class=question.config && question.config.border?'border-top pt-2':'')=question.question
-    .form-text!=marked.parse(question.description,  {breaks: true})
+    p!=marked.parseInline(question.description,  {breaks: true})
 
 mixin questionEvents()
     .row.mb-1

@@ -169,10 +169,9 @@ async function getEventsListApi(req, res, next){
             }
             return true;
         });
-        res.locals.events = _.indexBy(events, 'id');
         res.json({
             success: true,
-            events: events
+            events: _.sortBy(events, 'title')
         });
     } catch(err){
         next(err);
