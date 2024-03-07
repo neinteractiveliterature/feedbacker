@@ -44,8 +44,11 @@ mixin questionSummaryText(question, responses)
     ul.list-group
         for response of responses
             - const question_response = _.findWhere(response.responses, {question_id: question.id})
-            if question_response
-                li.list-group-item= question_response.value
+            if question_response && question_response.value !== ''
+                li.list-group-item
+                    if (!response.anonymous)
+                        i=response.user.name
+                    p= question_response.value
 
 mixin questionSummaryBoolean(question, responses)
     -
@@ -212,8 +215,11 @@ mixin responseIndividual(survey, responses)
                     option(value=response.id)
                         if response.anonymous
                             | Anonymous (##{response.id})
+
                         else
                             | #{response.user.name} (#{response.user.email})
+                        if !response.complete
+                            span(partial)
         .col-md-2.text-end
             button.btn.btn-outline-primary.mx-1#prev-individual-response(role="button" title='Previous' data-bs-toggle='tooltip' disabled='true')
                 i.fas.fa-arrow-left.me-1
@@ -237,6 +243,8 @@ mixin responseDisplay(response, survey,)
                     | Anonymous (##{response.id})
                 else
                     | #{response.user.name} (#{response.user.email})
+                if !response.complete
+                    .badge.text-bg-warning.mx-2 Partial
             for question in survey.questions
                 .row.my-2
                     .col

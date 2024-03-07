@@ -10,7 +10,7 @@ block content
                     button.nav-link.active#summary-tab(data-bs-toggle="tab" data-bs-target='#summary-tab-pane' type="button" role="tab" aria-controls="summary-tab-pane" aria-selected="true") Summary
                 ul.nav-item(role="presentation")
                     button.nav-link#individual-tab(data-bs-toggle="tab" data-bs-target='#individual-tab-pane' type="button" role="tab" aria-controls="summary-tab-pane" aria-selected="false") Individual
-                        .badge.text-bg-danger.ms-2=responses.length
+                        .badge.text-bg-primary.ms-2=responses.length
 
             #resultsTabContent.tab-content
                 #summary-tab-pane.tab-pane.fade.show.active.p-2(role="tabpanel" aria-labelledby="summary-tab" tabindex="0")

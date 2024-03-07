@@ -42,12 +42,12 @@ block content
                                         a.btn.btn-sm.btn-outline-secondary.mx-2.position-relative(href=`/survey/${survey.id}/responses`)
                                             i.fas.fa-eye.fa-fw.me-1
                                             | View All Responses
-                                            span.badge.rounded-pill.text-bg-danger.position-absolute.top-0.start-100.translate-middle=survey.responses.length
+                                            span.badge.rounded-pill.text-bg-primary.position-absolute.top-0.start-100.translate-middle=survey.responses.length
                                     if _.keys(survey.feedback).length
                                         a.btn.btn-sm.btn-outline-secondary.mx-2.position-relative(href=`/survey/${survey.id}/feedback`)
                                             i.fas.fa-eye.fa-fw.me-1
                                             | View My Events' Responses
-                                            span.badge.rounded-pill.text-bg-danger.position-absolute.top-0.start-100.translate-middle=_.flatten(_.pluck(survey.feedback, 'feedback')).length
+                                            span.badge.rounded-pill.text-bg-primary.position-absolute.top-0.start-100.translate-middle=_.flatten(_.pluck(survey.feedback, 'feedback')).length
 
                                     if survey.published || checkPermission('Con Com')
                                         a.btn.btn-sm.btn-outline-primary.mx-1(href=`/response/${survey.id}`)
