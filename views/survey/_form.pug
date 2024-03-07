@@ -44,7 +44,6 @@ if survey.id
                             th(data-priority="1") Name
                             th Question
                             th Type
-                            th Required?
                             th
 
                     tbody
@@ -54,11 +53,13 @@ if survey.id
                                 td= question.id
                                 td= question.display_order
                                 td= question.name
+                                    if question.required
+                                        .badge.text-bg-danger.mx-1 Required
+                                    if question.team_member_only
+                                        .badge.text-bg-info.mx-1 Team Member Only
                                 td.text-truncate(style='max-width:150px')= question.question
                                 td= question.type
 
-                                td
-                                    .badge(class=`text-bg-${question.required?'danger':'success'}`)=question.required?'Yes':'No'
 
                                 td.text-end
                                     button.btn.btn-outline-danger.btn-xs.delete-btn.mx-2(

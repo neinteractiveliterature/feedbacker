@@ -27,6 +27,7 @@ create table questions (
     config      jsonb,
     display_order int not null,
     required    boolean default false,
+    team_member_only boolean default false,
     primary key (id),
     foreign key (survey_id)
         references surveys(id)

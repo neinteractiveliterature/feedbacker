@@ -11,7 +11,8 @@ const tableFields = [
     'type',
     'config',
     'display_order',
-    'required'
+    'required',
+    'team_member_only'
 ];
 
 const Question = new Model('questions', tableFields, {

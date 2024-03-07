@@ -29,7 +29,9 @@ input(type='hidden' name='question[survey_id]' value=question.survey_id)
             input.form-check-input#question_required(type="checkbox", name="question[required]" checked=question.required)
             label.form-check-label(for="question_required") Required
 
-
+        .form-check.form-switch
+            input.form-check-input#question_team_member_only(type="checkbox", name="question[team_member_only]" checked=question.team_member_only)
+            label.form-check-label(for="question_team_member_only") Team Members Only
 .row.my-2
     .col
         +markdownEditor('Description', 'question_description', 'question[description]', 3, 100, question.description, true)

@@ -78,7 +78,7 @@ async function create(req, res, next){
     const question = req.body.question;
 
     req.session.questionData = question;
-    for (const field of ['required']){
+    for (const field of ['required', 'team_member_only']){
         if (!_.has(question, field)){
             question[field] = false;
         }
@@ -104,7 +104,7 @@ async function update(req, res, next){
     const id = req.params.id;
     const question = req.body.question;
     req.session.questionData = question;
-    for (const field of ['required']){
+    for (const field of ['required', 'team_member_only']){
         if (!_.has(question, field)){
             question[field] = false;
         }
