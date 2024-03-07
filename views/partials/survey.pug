@@ -87,7 +87,7 @@ mixin questionScale(question)
         if question.config && question.config.options
             each option, idx in question.config.options
                 .form-check.form-check-inline.mx-2
-                    input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=idx id=`question-${question.id}-${idx}` checked=value&&value===idx disabled=response.complete)
+                    input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=idx id=`question-${question.id}-${idx}` checked=value&&Number(value)===idx disabled=response.complete)
                     label.form-check-label(for=`question-${question.id}-${idx}`)= option
 
         else

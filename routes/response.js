@@ -49,7 +49,7 @@ async function showSurvey(req, res, next){
 
         res.locals.csrfToken = req.csrfToken();
         res.locals.getValue = function(questionId){
-            let question_response = _.findWhere(response.responses, {id: questionId});
+            let question_response = _.findWhere(response.responses, {question_id: Number(questionId)});
             if (question_response){
                 return question_response.value;
             } else {
