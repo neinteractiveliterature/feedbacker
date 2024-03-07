@@ -44,7 +44,7 @@ block content
                 .form-text If this an anonymous response, your name will not be displayed to convention staff.  You may still chose to share your name on comments you leave for GMs/event runners.
         for question in survey.questions
             if !question.team_member_only || activeUser.events.length
-                .row.my-2
+                .row.my-3
                     .col
                         +questionDisplay(question)
 
