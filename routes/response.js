@@ -131,7 +131,10 @@ async function getSignupsApi(req, res, next){
             if (a.event.event_category.name != b.event.event_category.name){
                 return a.event.event_category.name.localeCompare(b.event.event_category.name);
             }
-            return a.event.title.localeCompare(b.event.title);
+            const regex = /[^\w\d]*/g;
+            const aTitle = a.event.title.replace(regex, '');
+            const bTitle = b.event.title.replace(regex, '');
+            return aTitle.localeCompare(bTitle);
         });
 
         res.json({
