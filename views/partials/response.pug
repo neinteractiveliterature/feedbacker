@@ -262,7 +262,7 @@ mixin responseQuestionDisplay(question, response)
 mixin questionIndividualText(question, response)
     h5=question.question
     if question.description
-        .form-text=question.description
+        .form-text!=marked.parse(question.description,  {breaks: true})
     .card.text-bg-light.ms-4
         .card-body.p-2
             if response
@@ -280,7 +280,8 @@ mixin questionIndividualBoolean(question, response)
 mixin questionIndividualScale(question, response)
     h5=question.question
     if question.description
-        .form-text=question.description
+        .form-text!=marked.parse(question.description,  {breaks: true})
+
     .card.text-bg-light.ms-4
         .card-body.p-2
             if question.config && question.config.options
