@@ -3,8 +3,11 @@ extends ../layout
 block content
     .row
         .col
+            if !_.keys(feedback).length
+                p We're sorry, we have received no feedback for you yet, please check back later!
             each event,id in feedback
                 h3 #{event.event.event_category.name}: #{event.event.title}
+
                 each item in event.feedback
                     .card.my-2
                         .card-body

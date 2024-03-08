@@ -43,7 +43,7 @@ block content
                                             i.fas.fa-eye.fa-fw.me-1
                                             | View All Responses
                                             span.badge.rounded-pill.text-bg-primary.position-absolute.top-0.start-100.translate-middle=survey.responses.length
-                                    if _.keys(survey.feedback).length
+                                    if activeUser.events.length
                                         a.btn.btn-sm.btn-outline-secondary.mx-2.position-relative(href=`/survey/${survey.id}/feedback`)
                                             i.fas.fa-eye.fa-fw.me-1
                                             | View My Events' Responses
