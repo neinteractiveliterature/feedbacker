@@ -44,7 +44,7 @@ mixin questionSummaryText(question, responses)
     ul.list-group
         for response of responses
             - const question_response = _.findWhere(response.responses, {question_id: question.id})
-            if question_response && question_response.value !== ''
+            if question_response && question_response.value && question_response.value !== ''
                 li.list-group-item
                     if (!response.anonymous)
                         i=response.user.name
@@ -108,22 +108,35 @@ mixin questionSummaryScale(question, responses)
 
 mixin questionResultEvents(question, responses)
     -
-        const eventFeedback = {}
+        let eventFeedback = {}
         for(const response of responses){
             for (const feedback of response.feedback){
                 if (feedback.skipped) { continue; }
                 if (!_.has(eventFeedback, feedback.event_id)){
                     eventFeedback[feedback.event_id] = {
+                        id: feedback.event_id,
                         event: events[feedback.event_id],
                         feedback: []
-                    }
+                    };
                 }
                 eventFeedback[feedback.event_id].feedback.push(feedback)
             }
         }
 
+        eventFeedback = _.values(eventFeedback).sort((a, b)=>{
+            const aCategory = a.event.event_category.name;
+            const bCategory = b.event.event_category.name;
+            if (aCategory !== bCategory){
+                return aCategory.localeCompare(bCategory);
+            }
+            const regex = /[^\w\d]*/g;
+            const aTitle = a.event.title.replace(regex, '');
+            const bTitle = b.event.title.replace(regex, '');
+            return aTitle.localeCompare(bTitle);
+        });
+
     .accordion#feedback-accordion-summary
-        each feedback, eventId in eventFeedback
+        each feedback in eventFeedback
             .accordion-item
                 h2.accordion-header
                     button.accordion-button.collapsed.p-2(
