@@ -170,41 +170,50 @@ mixin questionResultEvents(question, responses)
                         +eventSummary(feedback.feedback, feedback.event)
 
 mixin eventSummary(feedback, event)
-    - const recommend = _.countBy(feedback, 'recommend');
+    -
+        const recommend = _.countBy(feedback, 'recommend');
+        if (_.has(recommend, "null")){
+            if (!_.has(recommend, '-1')) {
+                recommend['-1'] = 0;
+            }
+            recommend['-1'] += recommend["null"];
+            delete recommend["null"];
+        }
 
-    h5 Do you recommend this game?
+    h5 Do you recommend this #{event.event_category.name}?
+
 
     .progress.my-2.ms-4(role="progressbar" style="height: 25px")
         - const nrWidth = Math.round(recommend['-1'] / feedback.length * 100)
-        .progress-bar.bg-light(style=`width: ${nrWidth}%`)
+        .progress-bar.text-bg-light(style=`width: ${nrWidth}%`)
             if nrWidth
-                | No Response: #{recommend['-1']} #{nrWidth}%
+                | No Response: #{recommend['-1']} (#{nrWidth}%)
 
         - const snWidth = Math.round(recommend['1']/feedback.length * 100)
-        .progress-bar.bg-danger(style=`width: ${snWidth}%`)
+        .progress-bar.text-bg-danger(style=`width: ${snWidth}%`)
             if snWidth
-                | Strong No: #{recommend['1']} #{snWidth}%
+                | Strong No: #{recommend['1']} (#{snWidth}%)
 
         - const nWidth = Math.round(recommend['2']/feedback.length * 100)
-        .progress-bar.bg-warning(style=`width: ${nWidth}%`)
+        .progress-bar.text-bg-warning(style=`width: ${nWidth}%`)
             if nWidth
-                | No: #{recommend['2']} #{nWidth}%
+                | No: #{recommend['2']} (#{nWidth}%)
 
         - const nuWidth = Math.round(recommend['3']/feedback.length * 100)
-        .progress-bar.bg-primary(style=`width: ${nuWidth}%`)
+        .progress-bar.text-bg-primary(style=`width: ${nuWidth}%`)
             if nuWidth
-                | Neutral: #{recommend['3']} #{nuWidth}%
+                | Neutral: #{recommend['3']} (#{nuWidth}%)
 
 
         - const pWidth = Math.round(recommend['4']/feedback.length * 100)
-        .progress-bar.bg-info(style=`width: ${pWidth}%`)
+        .progress-bar.text-bg-info(style=`width: ${pWidth}%`)
             if pWidth
-                | Yes: #{recommend['4']} #{pWidth}%
+                | Yes: #{recommend['4']} (#{pWidth}%)
 
         - const spWidth = Math.round(recommend['5']/feedback.length * 100)
-        .progress-bar.bg-success(style=`width: ${spWidth}%`)
+        .progress-bar.text-bg-success(style=`width: ${spWidth}%`)
             if spWidth
-                | Strong Yes: #{recommend['5']} #{spWidth}%
+                | Strong Yes: #{recommend['5']} (#{spWidth}%)
 
     h5 Feedback for Intercon Staff
     ul.list-group.my-2.ms-4
