@@ -160,7 +160,7 @@ mixin questionResultEvents(question, responses)
 
                             small #{feedback.event.event_category.team_member_name}(s): #{team_members.join(', ')}
                         .col-2.text-end.p-2
-                            .badge.text-bg-danger #{feedback.feedback.length}
+                            .badge.text-bg-primary #{feedback.feedback.length}
 
                 .accordion-collapse.collapse(
                     id=`feedback-summary-event${feedback.event.id}`

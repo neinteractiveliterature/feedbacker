@@ -23,7 +23,7 @@ if (backto)
 .row.my-2
     .col
         label.control-label(for="feedback_recommend") Would you recommend this #{event.event_category.name}?
-        select.form-control.select2#feedback_recommend(name='feedback[recommend]')
+        select.form-control.select2#feedback_recommend(name='feedback[recommend]' data-placeholder="Recommendation")
             option
             option(value=-1 selected=feedback.recommend===-1) No Response
             option(value=1 selected=feedback.recommend===1) Strong No

@@ -28,7 +28,7 @@ function validate(data){
     if (! validator.isNumeric('' + data.event_id)){
         return false;
     }
-    if (! validator.isNumeric('' + data.recommend)){
+    if (data.recommend && ! validator.isNumeric('' + data.recommend)){
         return false;
     }
 

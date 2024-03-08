@@ -73,6 +73,7 @@ async function createApi(req, res, next){
         if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
+        feedback.recommend = Number(feedback.recommend);
         await req.models.feedback.create(feedback);
         delete req.session.feedbackData;
         res.json({success:true});
@@ -96,12 +97,15 @@ async function updateApi(req, res, next){
         if (! ((response.user_id === req.user.id) || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'not permitted'});
         }
-        const survey = await req.models.survey.get(current.survey_id);
+        const survey = await req.models.survey.get(response.survey_id);
         if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
+        feedback.recommend = Number(feedback.recommend);
+
         feedback.response_id = current.response_id;
         await req.models.feedback.update(feedbackId, feedback);
+
         res.json({success:true});
     } catch(err){
         res.status(500).json({success:false, error:err});
