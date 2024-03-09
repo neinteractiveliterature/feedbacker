@@ -13,10 +13,26 @@ $(function () {
 
     $('#prev-individual-response').on('click', showPrevIndividualResponse);
     $('#next-individual-response').on('click', showNextIndividualResponse);
+    $('#current-question').on('change', showSpecificQuestionResponse);
+    $('#current-response').on('change', showSpecificIndividualResponse);
 });
 
 function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function showSpecificQuestionResponse(e){
+    const $this = $(this);
+    let questionIdx = $this.val();
+    if (questionIdx > $('.question-response').length){
+        questionIdx = $('.question-response').length;
+    } else if (questionIdx < 1){
+        questionIdx = 1;
+    }
+    const $page = $('.question-response').eq(questionIdx-1);
+    const questionId = $page.data('questionid');
+    $('#question-results-select').val(questionId).trigger('change');
+
 }
 
 function showSummaryResults(e){
@@ -38,7 +54,7 @@ function showSummaryResults(e){
     } else {
         $('#next-question-response').attr('disabled', false);
     }
-    $currentQuestion.text(index + 1);
+    $currentQuestion.val(index + 1);
 }
 
 function showPrevQuestionResponse(e){
@@ -63,6 +79,20 @@ function showNextQuestionResponse(e){
     }
 }
 
+function showSpecificIndividualResponse(e){
+    const $this = $(this);
+    let responseIdx = $this.val();
+    if (responseIdx > $('.individual-response').length){
+        responseIdx = $('.individual-response').length;
+    } else if (responseIdx < 1){
+        responseIdx = 1;
+    }
+    const $page = $('.individual-response').eq(responseIdx-1);
+    const responseId = $page.data('responseid');
+    $('#question-individual-select').val(responseId).trigger('change');
+
+}
+
 function showIndividualResults(e){
     const $this = $(this);
     const responseId = $this.val();
@@ -82,7 +112,7 @@ function showIndividualResults(e){
     } else {
         $('#next-individual-response').attr('disabled', false);
     }
-    $currentResponse.text(index + 1);
+    $currentResponse.val(index + 1);
 
 }
 

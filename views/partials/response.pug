@@ -1,20 +1,23 @@
 mixin responseSummary(survey, responses)
     .row.my-2
-        label.col-form-label.col-md-2(for="questionResults") Question
+        label.col-form-label.col-md-1(for="questionResults") Question
         .col
             select.form-select.select2#question-results-select(data-placeholder="Question")
                 for question in survey.questions
                     if question.type !== 'header'
                         option(value=question.id)=question.question
-        .col-md-2.text-end
-            button.btn.btn-outline-primary.mx-1#prev-question-response(role="button" title='Previous' data-bs-toggle='tooltip' disabled='true')
-                i.fas.fa-arrow-left.me-1
-            span.ms-1#current-question 1
-            span.mx-1 of
-            span.me-1=survey.questions.filter(r => {return r.type !== 'header'}).length
+        .col-md-3.text-end
+            .btn-toolbar.justify-content-end
+                button.btn.btn-outline-primary#prev-question-response(role="button" title='Previous' data-bs-toggle='tooltip' disabled='true')
+                    i.fas.fa-arrow-left
+                .input-group.mx-1.w-50
+                    input.form-control#current-question.flex-shrink-1(val=1)
+                    .input-group-text
+                        span.mx-1 of
+                        span.me-1=survey.questions.filter(r => {return r.type !== 'header'}).length
 
-            button.btn.btn-outline-primary.mx-1#next-question-response(role="button" title='Next' data-bs-toggle='tooltip')
-                i.fas.fa-arrow-right.ms-1
+                button.btn.btn-outline-primary#next-question-response(role="button" title='Next' data-bs-toggle='tooltip')
+                    i.fas.fa-arrow-right
     #question-responses-container
         for question in survey.questions
             if question.type !== 'header'
@@ -183,7 +186,7 @@ mixin eventSummary(feedback, event)
     h5 Do you recommend this #{event.event_category.name}?
 
 
-    .progress.my-2.ms-4(role="progressbar" style="height: 25px")
+    .progress.my-2.ms-md-4(role="progressbar" style="height: 25px")
         - const nrWidth = Math.round(recommend['-1'] / feedback.length * 100)
         .progress-bar.text-bg-light(style=`width: ${nrWidth}%`)
             if nrWidth
@@ -216,25 +219,25 @@ mixin eventSummary(feedback, event)
                 | Strong Yes: #{recommend['5']} (#{spWidth}%)
 
     h5 Feedback for Intercon Staff
-    ul.list-group.my-2.ms-4
+    ul.list-group.my-2.ms-md-4
         for entry of feedback
             if entry.concom && entry.concom !== ''
                 li.list-group-item.text-bg-light= entry.concom
 
 
     h5 Feedback for #{event.event_category.team_member_name}(s)
-    ul.list-group.my-2.ms-4
+    ul.list-group.my-2.ms-md-4
         for entry of feedback
             if entry.gm && entry.gm !== ''
                 li.list-group-item.text-bg-light= entry.gm
 
 mixin responseIndividual(survey, responses)
     .row.my-3
-        label.col-form-label.col-md-2(for="questionResults") Response
+        label.col-form-label.col-md-1(for="questionResults") Response
         .col-md-8
             select.form-select.select2#question-individual-select(data-placeholder="Response")
-                for response in responses
-                    option(value=response.id)
+                for response, idx in responses
+                    option(value=response.id data-idx=idx)
                         if response.anonymous
                             | Anonymous (##{response.id})
 
@@ -242,15 +245,20 @@ mixin responseIndividual(survey, responses)
                             | #{response.user.name} (#{response.user.email})
                         if !response.complete
                             span(partial)
-        .col-md-2.text-end
-            button.btn.btn-outline-primary.mx-1#prev-individual-response(role="button" title='Previous' data-bs-toggle='tooltip' disabled='true')
-                i.fas.fa-arrow-left.me-1
-            span.ms-1#current-response 1
-            span.mx-1 of
-            span.me-1=responses.length
+        .col-md-3.text-end
+            .btn-toolbar.justify-content-end
 
-            button.btn.btn-outline-primary.mx-1#next-individual-response(role="button" title='Next' data-bs-toggle='tooltip')
-                i.fas.fa-arrow-right.ms-1
+                .btn-group.me-1
+                    button.btn.btn-outline-primary#prev-individual-response(role="button" title='Previous' data-bs-toggle='tooltip' disabled='true')
+                        i.fas.fa-arrow-left
+                .input-group.mx-1.w-50
+                    input.form-control#current-response.flex-shrink-1(val=1)
+                    .input-group-text
+                        span.me-1 of
+                        span=responses.length
+                .btn-group.ms-1
+                    button.btn.btn-outline-primary#next-individual-response(role="button" title='Next' data-bs-toggle='tooltip')
+                        i.fas.fa-arrow-right
     #individual-responses-container
         each response in responses
             +responseDisplay(response, survey)
@@ -293,9 +301,9 @@ mixin questionIndividualText(question, response)
     h5=question.question
     if question.description
         .form-text!=marked.parse(question.description,  {breaks: true})
-    .card.text-bg-light.ms-4
+    .card.text-bg-light.ms-md-4
         .card-body.p-2
-            if response
+            if response && response.value !== ''
                 = response.value
             else
                 i No Answer Provided
@@ -312,7 +320,7 @@ mixin questionIndividualScale(question, response)
     if question.description
         .form-text!=marked.parse(question.description,  {breaks: true})
 
-    .card.text-bg-light.ms-4
+    .card.text-bg-light.ms-md-4
         .card-body.p-2
             if question.config && question.config.options
                 if response && response.value !== -1
@@ -337,7 +345,7 @@ mixin questionIndividualScale(question, response)
 
 mixin questionIndividualEvents(question, response)
     label.control-label.mb-2(for=`response-${response.response_id}-question-${question.id}`)=question.question
-    .accordion.ms-4(id=`feedback-accordion-${response.id}`)
+    .accordion.ms-md-4(id=`feedback-accordion-${response.id}`)
 
         each feedback in response.feedback
             if !feedback.skipped
@@ -385,13 +393,21 @@ mixin questionIndividualEvents(question, response)
                                         .badge.text-bg-success.ms-2 Strong Yes
 
                             h5 Feedback for Intercon Staff
-                            .card.text-bg-light.ms-4.mb-2
-                                .card-body.p-2=feedback.concom?feedback.concom:'None Provided'
+                            .card.text-bg-light.ms-md-4.mb-2
+                                .card-body.p-2
+                                    if feedback.concom
+                                        =feedback.concom
+                                    else
+                                        i None Provided
 
 
                             h5 Feedback for #{event.event_category.team_member_name}(s)
-                            .card.text-bg-light.ms-4.mb-2
-                                .card-body.p-2=feedback.gm?feedback.gm:'None Provided'
+                            .card.text-bg-light.ms-md-4.mb-2
+                                .card-body.p-2
+                                    if feedback.gm
+                                        = feedback.gm
+                                    else
+                                        i None Provided
 
                             h5 Share my name with the #{event.event_category.team_member_name}(s)
                                 if feedback.gm_use_name
