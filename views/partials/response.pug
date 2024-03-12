@@ -140,6 +140,15 @@ mixin questionResultEvents(question, responses)
 
     .accordion#feedback-accordion-summary
         each feedback in eventFeedback
+            -
+                const ratings = (_.pluck(feedback.feedback, 'recommend'))
+                    .map(i => { return Number(i)})
+                    .filter(i => {return i > 0});
+                let avg = 'N/A'
+                if (ratings.length){
+                    avg = ratings.reduce((partialSum, a) => partialSum + a, 0) / ratings.length
+                    avg = Math.round(avg*100)/100
+                }
             .accordion-item
                 h2.accordion-header
                     button.accordion-button.collapsed.p-2(
@@ -162,7 +171,24 @@ mixin questionResultEvents(question, responses)
                                 }
 
                             small #{feedback.event.event_category.team_member_name}(s): #{team_members.join(', ')}
-                        .col-2.text-end.p-2
+                        .col-2.p-2
+                            if avg === 'N/A'
+                                | N/A
+                            else
+                                span.pe-1 #{avg.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                                - let c = 1;
+                                while c <= avg
+                                    - c++;
+                                    i.fas.fa-star.text-warning.fa-fw
+
+                                - const remainder = Math.round((c - avg) * 100) / 100;
+                                if remainder === 1
+                                else if remainder <= 0.33
+                                    i.fas.fa-star.text-warning.fa-fw
+                                else if remainder <= 0.67
+                                    i.fas.fa-star-half.text-warning.fa-fw
+
+                        .col-1.text-end.p-2
                             .badge.text-bg-primary #{feedback.feedback.length}
 
                 .accordion-collapse.collapse(
@@ -372,6 +398,21 @@ mixin questionIndividualEvents(question, response)
                                     }
 
                                 small #{event.event_category.team_member_name}(s): #{team_members.join(', ')}
+                            .col.text-end.pe-4
+                                case feedback.recommend
+                                    when -1
+                                        .badge.text-bg-dark No Response
+                                    when 1
+                                        .badge.text-bg-danger Strong No
+                                    when 2
+                                        .badge.text-bg-warning No
+                                    when 3
+                                        .badge.text-bg-primary Neutral
+                                    when 4
+                                        .badge.text-bg-info Yes
+                                    when 5
+                                        .badge.text-bg-success Strong Yes
+
                     .accordion-collapse.collapse(
                         id=`feedback-${response.id}-event${feedback.event_id}`
                         data-bs-parent=`#feedback-accordion-${response.id}`
