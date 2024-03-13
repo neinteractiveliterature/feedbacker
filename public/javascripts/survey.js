@@ -26,6 +26,7 @@ async function showEventFeedback(e){
     const eventId = $this.data('eventid');
     const responseId = $('#response-id').val();
     const base_url = $('#base-url').val();
+    const disabled = $this.data('disabled');
     $this.find('.feedback-icon').removeClass('fa-edit').addClass('fa-sync').addClass('fa-spin');
 
     const result = await fetch(`/feedback/${responseId}/${eventId}/api`);
@@ -34,6 +35,7 @@ async function showEventFeedback(e){
     data.capitalize = capitalize;
     data.modal = true;
     data.backto = 'modal';
+    data.disabled = disabled;
 
     const $modal = $('#surveyModal');
 
@@ -45,11 +47,15 @@ async function showEventFeedback(e){
     }
 
     prepFeedbackForm($modal.find('form'));
+    if (data.disabled){
+        $modal.find('.save-btn').hide();
+    }
     $modal.modal('show');
 
     $modal.on('hidden.bs.modal', function(e){
         $modal.modal('dispose');
         $this.find('.feedback-icon').removeClass('fa-sync').addClass('fa-edit').removeClass('fa-spin');
+        $modal.find('.save-btn').show();
     });
 
 }
@@ -157,7 +163,6 @@ async function loadSignups(){
         userEvents : (await signupsResult.json()).userEvents,
         disabled: complete === 'true' || published !== 'true'
     };
-    console.log(data);
 
     $('#questionEvents').html(signupslistTemplate(data));
     $('#signupsLoading').hide();

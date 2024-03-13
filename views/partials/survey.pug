@@ -158,18 +158,35 @@ mixin questionEvents()
                                             | Feedback Provided
                                 td.text-end
                                     .btn-group
-                                        button.btn.btn-sm.btn-outline-primary.feedback-edit.d-inline-block(
-                                            role='button'
-                                            data-eventid=event.id
-                                            disabled=disabled
-                                            title=hasFeedback?'Edit Feedback':'Provide Feedback'
-                                            data-bs-toggle='tooltip'
-                                        )
-                                            i.fas.fa-edit.feedback-icon
-                                            if hasFeedback
-                                                .d-none.d-lg-inline.ms-1 Edit Feedback
-                                            else
-                                                .d-none.d-lg-inline.ms-1 Provide Feedback
+                                        -
+                                            let btnText = 'Provide Feedback'
+                                            if (disabled){
+                                                if (hasFeedback){
+                                                    btnText = 'View Feedback'
+                                                } else {
+                                                    btnText = 'No Feedback'
+                                                }
+                                            } else {
+                                                if (hasFeedback){
+                                                    btnText = 'Edit Feedback'
+                                                }
+                                            }
+
+                                        if !disabled || hasFeedback
+                                            button.btn.btn-sm.btn-outline-primary.feedback-edit.d-inline-block(
+                                                role='button'
+                                                data-eventid=event.id
+                                                title=btnText
+                                                data-bs-toggle='tooltip'
+                                                data-disabled=disabled?'true':''
+                                            )
+                                                if disabled
+                                                    i.fas.fa-eye.feedback-icon
+                                                    .d-none.d-lg-inline.ms-1 #{btnText}
+                                                else
+                                                    i.fas.fa-edit.feedback-icon
+                                                    .d-none.d-lg-inline.ms-1 #{btnText}
+
                                         button.btn.btn-sm.btn-outline-danger.ms-1.feedback-remove.d-inline-block(
                                             role='button'
                                             data-eventid= event.id
