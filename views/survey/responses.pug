@@ -5,11 +5,9 @@ include ../partials/response
 block content
     .row
         .col
-            ul.nav.nav-tabs#resultsTab(role='tablist')
-                ul.nav-item(role="presentation")
-                    button.nav-link.active#summary-tab(data-bs-toggle="tab" data-bs-target='#summary-tab-pane' type="button" role="tab" aria-controls="summary-tab-pane" aria-selected="true") Summary
-                ul.nav-item(role="presentation")
-                    button.nav-link#individual-tab(data-bs-toggle="tab" data-bs-target='#individual-tab-pane' type="button" role="tab" aria-controls="summary-tab-pane" aria-selected="false") Individual
+            .nav.nav-tabs#resultsTab(role='tablist')
+                button.nav-link.active#summary-tab(data-bs-toggle="tab" data-bs-target='#summary-tab-pane' type="button" role="tab" aria-controls="summary-tab-pane" aria-selected="true") Summary
+                button.nav-link#individual-tab(data-bs-toggle="tab" data-bs-target='#individual-tab-pane' type="button" role="tab" aria-controls="summary-tab-pane" aria-selected="false") Individual
                         .badge.text-bg-primary.ms-2=responses.length
 
             #resultsTabContent.tab-content

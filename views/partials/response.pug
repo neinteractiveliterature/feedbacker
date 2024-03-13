@@ -175,18 +175,32 @@ mixin questionResultEvents(question, responses)
                             if avg === 'N/A'
                                 | N/A
                             else
-                                span.pe-1 #{avg.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-                                - let c = 1;
-                                while c <= avg
-                                    - c++;
-                                    i.fas.fa-star.text-warning.fa-fw
+                                span.pe-1.d-lg-none #{avg.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                                span.d-none.d-lg-inline
+                                    .progress(role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="5")
+                                        -
+                                            let pgclass='primary';
+                                            if (avg >= 4.5){ pgclass = 'success'}
+                                            else if (avg >= 3.5) { pgclass = 'info' }
+                                            else if (avg >= 2.5) { pgclass = 'primary' }
+                                            else if (avg >= 1.5) { pgclass = 'warning' }
+                                            else { pgclass = 'danger' }
 
-                                - const remainder = Math.round((c - avg) * 100) / 100;
-                                if remainder === 1
-                                else if remainder <= 0.33
-                                    i.fas.fa-star.text-warning.fa-fw
-                                else if remainder <= 0.67
-                                    i.fas.fa-star-half.text-warning.fa-fw
+                                        .progress-bar(style=`width: ${avg/5*100}%` class=`text-bg-${pgclass}`)
+                                            | #{avg.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 1 })}
+
+                                //
+                                    - let c = 1;
+                                    while c <= avg
+                                        - c++;
+                                        i.fas.fa-star.text-warning.fa-fw
+
+                                    - const remainder = Math.round((c - avg) * 100) / 100;
+                                    if remainder === 1
+                                    else if remainder <= 0.33
+                                        i.fas.fa-star.text-warning.fa-fw
+                                    else if remainder <= 0.67
+                                        i.fas.fa-star-half.text-warning.fa-fw
 
                         .col-1.text-end.p-2
                             .badge.text-bg-primary #{feedback.feedback.length}
