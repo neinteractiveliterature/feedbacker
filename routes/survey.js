@@ -17,7 +17,7 @@ async function list(req, res, next){
         res.locals.surveys = await async.map(surveys, async function(survey, cb){
             survey.convention = await req.intercode.getConvention();
             survey.response = await req.models.response.findOne({survey_id: survey.id, user_id: req.user.id});
-            survey.responses = await surveyHelper.getResponses(survey, req.user, req.intercode);
+            survey.responses = await surveyHelper.getResponses(survey, req.user, req.intercode, true);
             survey.feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
             return survey;
         });
