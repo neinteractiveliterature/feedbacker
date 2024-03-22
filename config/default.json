@@ -25,5 +25,12 @@
         "callbackURL": "callbackURL",
         "scope": "public openid read_signups read_conventions read_profile read_events",
         "passReqToCallback": true
-    }
+    },
+    "staffPositions": [
+        "Con Chair",
+        "Convention Admin",
+        "Website Team",
+        "Survey Coordinator",
+        "Survey Team"
+    ]
 }

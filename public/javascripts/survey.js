@@ -11,7 +11,8 @@ $(function () {
 
     $('#surveyModal').find('.save-btn').on('click', submitFeedbackModal);
     $('#response-anonymous').on('change', displaySurveyUserName).trigger('change');
-    loadSignups();
+    if ($('#questionEvents').length){ loadSignups();}
+    $('#deleteSurveyBtn').confirmation({'title':'Delete this Survey?'}).on('click', deleteSurvey);
 });
 
 let eventList = {};
@@ -187,5 +188,18 @@ function displaySurveyUserName(e){
     } else {
         $('#survey-user').show();
         $('#survey-user-anon').hide();
+    }
+}
+
+async function deleteSurvey(e){
+    e.preventDefault();
+    e.stopPropagation();
+    const $this = $(this);
+    const url = $this.attr('url');
+    const result = await fetch(url, {method:'DELETE', redirect:'manual'});
+    if($this.attr('data-back')){
+        location = $this.attr('data-back');
+    } else {
+        location.reload();
     }
 }

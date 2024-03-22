@@ -109,15 +109,50 @@ async function showNew(req, res, next){
         name: null,
         questions: [],
         base_url: null,
-        published: false
+        published: false,
+        css: '',
+        body_font: null,
+        header_font: null,
+        brand_font: null
     };
-    res.locals.breadcrumbs = {
-        path: [
-            { url: '/', name: 'Home'},
-            { url: '/survey', name: 'Surveys'},
-        ],
-        current: 'New'
-    };
+
+     if (req.query.clone){
+        const survey = await req.models.survey.get(req.query.clone);
+        if(!survey){
+            throw new Error('Invalid Survey');
+        }
+        delete survey.id;
+        survey.clone_id = Number(req.query.clone)
+        survey.published = false;
+        res.locals.survey = survey;
+        res.locals.breadcrumbs = {
+            path: [
+                { url: '/', name: 'Home'},
+                { url: '/survey', name: 'Surveys'},
+            ],
+            current: `Clone: ${survey.name}`
+        };
+        res.locals.title += ` - Clone Survey - ${survey.name}`;
+    } else {
+        res.locals.survey = {
+            name: null,
+            questions: [],
+            base_url: null,
+            published: false,
+            css: '',
+            body_font: null,
+            header_font: null,
+            brand_font: null
+        };
+
+        res.locals.breadcrumbs = {
+            path: [
+                { url: '/', name: 'Home'},
+                { url: '/survey', name: 'Surveys'},
+            ],
+            current: 'New'
+        };
+    }
 
     res.locals.csrfToken = req.csrfToken();
     if (_.has(req.session, 'surveyData')){
@@ -125,7 +160,7 @@ async function showNew(req, res, next){
         delete req.session.surveyData;
     }
     try{
-        res.locals.conventions = await req.intercode.getConventions();
+        res.locals.conventions = _.sortBy(await req.intercode.getConventions(), 'name');
         res.locals.title += ' - New Survey}';
         res.render('survey/new');
     } catch (err){
@@ -139,10 +174,17 @@ async function showEdit(req, res, next){
 
     try{
         const survey = await req.models.survey.get(id);
+
         if (!survey){
             req.flash('error', 'Invalid Survey');
-            return req.redirect('/survey');
+            return res.redirect('/survey');
         }
+
+        if (!res.locals.checkPermission('staff', survey.base_url)){
+            req.flash('error', `Not staff on ${survey.base_url}`);
+            return res.redirect('/survey');
+        }
+
         res.locals.breadcrumbs = {
             path: [
                 { url: '/', name: 'Home'},
@@ -156,7 +198,7 @@ async function showEdit(req, res, next){
             delete req.session.surveyData;
         }
         res.locals.title += ` - Edit ${survey.name}`;
-        res.locals.conventions = await req.intercode.getConventions();
+        res.locals.conventions =  _.sortBy(await req.intercode.getConventions(), 'name');
         res.render('survey/edit');
 
     } catch(err){
@@ -177,7 +219,19 @@ async function create(req, res, next){
     survey.created_by = req.user.id;
 
     try {
-        await req.models.survey.create(survey);
+        if (!res.locals.checkPermission('staff', survey.base_url)){
+            req.flash('error', `Not staff on ${survey.base_url}`);
+            return res.redirect('/survey');
+        }
+
+        const id = await req.models.survey.create(survey);
+        if (survey.clone_id){
+            const questions = await req.models.question.find({survey_id:survey.clone_id});
+            for (const question of questions){
+                question.survey_id = id;
+                await req.models.question.create(question);
+            }
+        }
         req.flash('success', `Created Survey: ${survey.name}`);
         delete req.session.surveyData;
         res.redirect('/survey');
@@ -202,7 +256,11 @@ async function update(req, res, next){
         const current = await req.models.survey.get(id);
         if (!current){
             req.flash('error', 'Invalid Survey');
-            return req.redirect('/survey');
+            return res.redirect('/survey');
+        }
+        if (!res.locals.checkPermission('staff', current.base_url)){
+            req.flash('error', `Not staff on ${current.base_url}`);
+            return res.redirect('/survey');
         }
 
         for (const field of ['created', 'created_by']){
@@ -222,9 +280,13 @@ async function remove(req, res, next){
     const id = req.params.id;
     try{
         const current = await req.models.survey.get(id);
+        if (!res.locals.checkPermission('staff', current.base_url)){
+            req.flash('error', 'Permission Denied to Delete Survey');
+            return res.redirect('/survey');
+        }
         if (!current){
             req.flash('error', 'Invalid Survey');
-            return req.redirect('/survey');
+            return res.redirect('/survey');
         }
         await req.models.survey.delete(id);
         req.flash('success', `Removed Survey: ${current.name}`);

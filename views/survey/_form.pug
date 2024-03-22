@@ -1,3 +1,6 @@
+if survey.clone_id
+    input(type='hidden' name='survey[clone_id]' value=survey.clone_id)
+
 .row.my-2
     .col
         label.control-label(for="survey_name") Name
@@ -120,10 +123,22 @@ if survey.id
                                         i.bi.bi-trash3-fill
 .row.my-2
     .col
-        button.btn.btn-primary.me-1(type="submit")= survey.id?'Update':'Create'
+        button.btn.btn-primary.me-2(type="submit")
+            i.bi.bi-save.me-1
+            | #{survey.id?'Update':'Create'}
+
         if !survey.published && survey.id
-            a.btn.btn-outline-primary.me-2(href=`/response/${survey.id}`)
+            a.btn.btn-outline-primary.me-1(href=`/response/${survey.id}`)
                 i.bi.bi-eye-fill.me-1
                 | Preview Survey
+
+        if survey.id
+
+            a.btn.btn-secondary.me-1(href=`/survey/new?clone=${survey.id}`)
+                i.bi.bi-copy.me-1
+                | Clone Survey
+            button.btn.btn-danger.me-1#deleteSurveyBtn(url=`/survey/${survey.id}` data-back=`/survey`)
+                i.bi.bi-trash3-fill.me-1
+                | Delete Survey
 
         a.btn.btn-link(href="/survey") Cancel
