@@ -15,10 +15,12 @@ async function list(req, res, next){
     try {
         const surveys = await req.models.survey.find({});
         res.locals.surveys = await async.map(surveys, async function(survey, cb){
-            survey.convention = await req.intercode.getConvention();
+            survey.convention = await req.intercode.getConvention(survey.base_url);
             survey.response = await req.models.response.findOne({survey_id: survey.id, user_id: req.user.id});
             survey.responses = await surveyHelper.getResponses(survey, req.user, req.intercode, true);
             survey.feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
+            survey.userEvents = await req.intercode.getMemberEvents(req.user.intercode_id, survey.base_url);
+
             return survey;
         });
         res.locals.title += ' - Survey List';
@@ -69,13 +71,17 @@ async function showResponses(req, res, next){
             req.flash('error', 'Survey not found');
             return res.redirect('/survey');
         }
-        if (!(survey.published || res.locals.checkPermission('Con Com'))){
+        if (!(survey.published || res.locals.checkPermission('any', survey.base_url))){
             req.flash('error', 'Survey not published');
+            return res.redirect('/survey');
+        }
+        if (!res.locals.checkPermission('any', survey.base_url)){
+            req.flash('error', 'Not Authorized');
             return res.redirect('/survey');
         }
         res.locals.responses = await surveyHelper.getResponses(survey, req.user, req.intercode);
         res.locals.survey = survey;
-        const events = (await req.intercode.getEvents()).filter(event => {
+        const events = (await req.intercode.getEvents(survey.base_url)).filter(event => {
             if (event.event_category.name === 'Volunteer event') { return false; }
             if (event.event_category.name === 'Con services') { return false; }
             return true;
@@ -98,7 +104,7 @@ async function showResponses(req, res, next){
 }
 
 
-function showNew(req, res, next){
+async function showNew(req, res, next){
     res.locals.survey = {
         name: null,
         questions: [],
@@ -118,8 +124,13 @@ function showNew(req, res, next){
         res.locals.survey = req.session.surveyData;
         delete req.session.surveyData;
     }
-    res.locals.title += ' - New Survey}';
-    res.render('survey/new');
+    try{
+        res.locals.conventions = await req.intercode.getConventions();
+        res.locals.title += ' - New Survey}';
+        res.render('survey/new');
+    } catch (err){
+        next(err);
+    }
 }
 
 async function showEdit(req, res, next){
@@ -145,6 +156,7 @@ async function showEdit(req, res, next){
             delete req.session.surveyData;
         }
         res.locals.title += ` - Edit ${survey.name}`;
+        res.locals.conventions = await req.intercode.getConventions();
         res.render('survey/edit');
 
     } catch(err){
@@ -228,13 +240,13 @@ router.use(function(req, res, next){
     res.locals.siteSection='survey';
     next();
 });
+router.use(permission('login'));
 
-router.get('/', permission('login'), list);
+router.get('/', list);
 router.get('/new', permission('staff'), csrf(), showNew);
 router.get('/:id', permission('staff'), csrf(), show);
-router.get('/:id/feedback', permission('login'), csrf(), showFeedback);
-router.get('/:id/responses', permission('Con Com'), csrf(), showResponses);
-
+router.get('/:id/feedback',  csrf(), showFeedback);
+router.get('/:id/responses', csrf(), showResponses);
 router.get('/:id/edit', permission('staff'), csrf(), showEdit);
 router.post('/', permission('staff'), csrf(), create);
 router.put('/:id', permission('staff'), csrf(), update);

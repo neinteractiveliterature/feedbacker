@@ -59,7 +59,7 @@ function prepDataTable(){
             //orderable: true,
             targets:   'sort-handle',
             render: () => {
-                const $i = $('<i>').addClass('fa').addClass('fa-bars');
+                const $i = $('<i>').addClass('bi').addClass('bi-grip-horizontal');
                 return $i[0].outerHTML;},
         });
         options.columnDefs.push({ orderable: false, targets: '_all' });

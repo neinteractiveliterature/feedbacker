@@ -9,7 +9,7 @@ mixin responseSummary(survey, responses)
         .col-md-3.text-end
             .btn-toolbar.justify-content-end
                 button.btn.btn-outline-primary#prev-question-response(role="button" title='Previous' data-bs-toggle='tooltip' disabled='true')
-                    i.fas.fa-arrow-left
+                    i.bi.bi-arrow-left
                 .input-group.mx-1.w-50
                     input.form-control#current-question.flex-shrink-1(val=1)
                     .input-group-text
@@ -17,7 +17,7 @@ mixin responseSummary(survey, responses)
                         span.me-1=survey.questions.filter(r => {return r.type !== 'header'}).length
 
                 button.btn.btn-outline-primary#next-question-response(role="button" title='Next' data-bs-toggle='tooltip')
-                    i.fas.fa-arrow-right
+                    i.bi.bi-arrow-right
     #question-responses-container
         for question in survey.questions
             if question.type !== 'header'
@@ -194,14 +194,14 @@ mixin questionResultEvents(question, responses)
                                     - let c = 1;
                                     while c <= avg
                                         - c++;
-                                        i.fas.fa-star.text-warning.fa-fw
+                                        i.bi.bi-star-fill.text-warning
 
                                     - const remainder = Math.round((c - avg) * 100) / 100;
                                     if remainder === 1
                                     else if remainder <= 0.33
-                                        i.fas.fa-star.text-warning.fa-fw
+                                        i.bi.bi-star-fill.text-warning
                                     else if remainder <= 0.67
-                                        i.fas.fa-star-half.text-warning.fa-fw
+                                        i.bi.bi-star-half.text-warning
 
                         .col-1.text-end.p-2
                             .badge.text-bg-primary #{feedback.feedback.length}
@@ -291,7 +291,7 @@ mixin responseIndividual(survey, responses)
 
                 .btn-group.me-1
                     button.btn.btn-outline-primary#prev-individual-response(role="button" title='Previous' data-bs-toggle='tooltip' disabled='true')
-                        i.fas.fa-arrow-left
+                        i.bi.bi-arrow-left
                 .input-group.mx-1.w-50
                     input.form-control#current-response.flex-shrink-1(val=1)
                     .input-group-text
@@ -299,7 +299,7 @@ mixin responseIndividual(survey, responses)
                         span=responses.length
                 .btn-group.ms-1
                     button.btn.btn-outline-primary#next-individual-response(role="button" title='Next' data-bs-toggle='tooltip')
-                        i.fas.fa-arrow-right
+                        i.bi.bi-arrow-right
     #individual-responses-container
         each response in responses
             +responseDisplay(response, survey)

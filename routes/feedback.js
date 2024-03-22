@@ -12,10 +12,6 @@ async function showApi(req, res, next){
     const eventId = req.params.eventId;
 
     try {
-        const event = await req.intercode.getEvent(eventId);
-        if (!event){
-            return res.status(404).json({success:false, error:'Not a valid event'});
-        }
         const response = await req.models.response.get(responseId);
         if (!response){
             return res.status(404).json({success:false, error:'Not a valid survey response'});
@@ -26,6 +22,11 @@ async function showApi(req, res, next){
         const survey = await req.models.survey.get(response.survey_id);
         if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
+        }
+
+        const event = await req.intercode.getEvent(eventId, survey.base_url);
+        if (!event){
+            return res.status(404).json({success:false, error:'Not a valid event'});
         }
 
         let feedback = await req.models.feedback.findOne({response_id:responseId, event_id:eventId});
@@ -128,10 +129,6 @@ async function removeSignupApi(req, res, next){
     const eventId = req.params.eventId;
     try {
 
-        const event = await req.intercode.getEvent(eventId);
-        if (!event){
-            return res.status(404).json({success:false, error:'Not a valid event'});
-        }
         const response = await req.models.response.get(responseId);
         if (!response){
             return res.status(404).json({success:false, error:'Not a valid survey response'});
@@ -142,6 +139,10 @@ async function removeSignupApi(req, res, next){
         const survey = await req.models.survey.get(response.survey_id);
         if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
+        }
+        const event = await req.intercode.getEvent(eventId, survey.base_url);
+        if (!event){
+            return res.status(404).json({success:false, error:'Not a valid event'});
         }
 
         let feedback = await req.models.feedback.findOne({response_id: responseId, event_id: eventId});
@@ -167,10 +168,6 @@ async function addSignupApi(req, res, next){
     const eventId = req.params.eventId;
     try {
 
-        const event = await req.intercode.getEvent(eventId);
-        if (!event){
-            return res.status(404).json({success:false, error:'Not a valid event'});
-        }
         const response = await req.models.response.get(responseId);
         if (!response){
             return res.status(404).json({success:false, error:'Not a valid survey response'});
@@ -181,6 +178,10 @@ async function addSignupApi(req, res, next){
         const survey = await req.models.survey.get(response.survey_id);
         if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
+        }
+        const event = await req.intercode.getEvent(eventId, survey.base_url);
+        if (!event){
+            return res.status(404).json({success:false, error:'Not a valid event'});
         }
 
         let feedback = await req.models.feedback.findOne({response_id: responseId, event_id: eventId});

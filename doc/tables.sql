@@ -14,6 +14,10 @@ create table surveys (
     created_by  int not null,
     created     timestamp with time zone DEFAULT now(),
     published   boolean default false,
+    css         text,
+    body_font varchar(255),
+    header_font varchar(255),
+    brand_font varchar(255),
     primary key (id)
 );
 

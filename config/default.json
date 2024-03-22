@@ -15,9 +15,7 @@
             "tls": false
         },
         "cacheType": "redis",
-        "logRequests": true,
-        "fontAwesomeKit": null
-
+        "logRequests": true
     },
     "auth": {
         "authorizationURL": "authorizationURL",

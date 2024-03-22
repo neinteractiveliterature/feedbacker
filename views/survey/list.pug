@@ -2,67 +2,71 @@ extends ../layout
 
 block content
     if (checkPermission('staff'))
-        a.btn.btn-success.mb-2( href='/survey/new')
-            span.fa.fa-plus
+        a.btn.btn-outline-success.mb-2( href='/survey/new')
+            span.bi.bi-plus-lg
             |  New Survey
-    .row
+    .row.my-2
         .col
             .list-group
                 for survey in surveys
-                    if survey.published || survey.created_by === activeUser.id || checkPermission('Con Com')
+                    if survey.published || survey.created_by === activeUser.id || checkPermission('any', survey.base_url)
                         .list-group-item.p-3
                             .row
-                                .col-auto
+                                .col-xxl
                                     strong=survey.name
                                     small.ms-1
                                         | (
                                         a(target="_blank" href=survey.base_url)= survey.convention.name
                                         | )
-                                    if survey.created_by === activeUser.id || checkPermission('Con Com')
+
+
+                                    if survey.created_by === activeUser.id || checkPermission('any', survey.base_url)
                                         if survey.published
-                                            .badge.text-bg-success.ms-2 Active
+                                            .badge.text-bg-success.ms-1 Active
                                         else
-                                            .badge.text-bg-warning.ms-2 Unpublished
-                                    if survey.response
-                                        if survey.response.complete
-                                            .badge.text-bg-success.ms-2
-                                                i.fas.fa-check-circle.me-1
-                                                | Completed
-                                        else
-                                            .badge.text-bg-info.ms-2
-                                                i.fas.fa-question-circle.me-1
-                                                | In-Progress
+                                            .badge.text-bg-warning.ms-1 Unpublished
 
-                                .col.text-end
-                                    if survey.created_by === activeUser.id || checkPermission('staff')
-                                        a.btn.btn-sm.btn-outline-dark.mx-1(href=`/survey/${survey.id}/edit`)
-                                            i.fas.fa-edit.fa-fw.me-1
-                                            | Edit Survey
-                                    if survey.responses.length
-                                        a.btn.btn-sm.btn-outline-secondary.mx-2.position-relative(href=`/survey/${survey.id}/responses`)
-                                            i.fas.fa-eye.fa-fw.me-1
-                                            | View All Responses
-                                            span.badge.rounded-pill.text-bg-primary.position-absolute.top-0.start-100.translate-middle=survey.responses.length
-                                    if activeUser.events.length
-                                        a.btn.btn-sm.btn-outline-secondary.mx-2.position-relative(href=`/survey/${survey.id}/feedback`)
-                                            i.fas.fa-eye.fa-fw.me-1
-                                            | View My Events' Responses
-                                            span.badge.rounded-pill.text-bg-primary.position-absolute.top-0.start-100.translate-middle=_.flatten(_.pluck(survey.feedback, 'feedback')).length
 
-                                    if survey.published || checkPermission('Con Com')
-                                        a.btn.btn-sm.btn-outline-primary.mx-1(href=`/response/${survey.id}`)
-                                            if !survey.published
-                                                i.fas.fa-eye.fa-fw.me-1
-                                                | Preview
-                                            else if survey.response
-                                                if survey.response.complete
-                                                    i.fas.fa-eye.fa-fw.me-1
-                                                    | View My Response
+                                .col-xxl.text-end
+                                    if survey.created_by === activeUser.id || checkPermission('staff', survey.base_url)
+                                        a.btn.btn-sm.btn-outline-dark.float-start.mt-3.mt-xxl-0(href=`/survey/${survey.id}/edit`)
+                                            i.bi.bi-pencil-square.me-1
+                                            | Edit
+                                    .text-end
+                                        if survey.responses.length
+                                            a.btn.btn-sm.btn-outline-secondary.mx-2.position-relative.mt-3.mt-xxl-0(href=`/survey/${survey.id}/responses`)
+                                                i.bi.bi-eye-fill.me-1
+                                                | All Responses
+                                                span.badge.rounded-pill.text-bg-primary.position-absolute.top-0.start-100.translate-middle=survey.responses.length
+                                        if survey.published && survey.userEvents.length
+                                            a.btn.btn-sm.btn-outline-secondary.mx-2.position-relative.mt-3.mt-xxl-0(href=`/survey/${survey.id}/feedback`)
+                                                i.bi.bi-eye-fill.me-1
+                                                | My Events' Responses
+                                                span.badge.rounded-pill.text-bg-primary.position-absolute.top-0.start-100.translate-middle=_.flatten(_.pluck(survey.feedback, 'feedback')).length
+
+                                        if survey.published || checkPermission('any', survey.base_url)
+                                            a.btn.btn-sm.btn-outline-primary.mx-1.position-relative.mt-3.mt-xxl-0(href=`/response/${survey.id}`)
+                                                if !survey.published
+                                                    i.bi.bi-eye-fill.me-1
+                                                    | Preview
+
+                                                else if survey.response
+                                                    if survey.response.complete
+                                                        i.bi.bi-eye-fill.me-1
+                                                        | View My Response
+                                                        span.badge.rounded-pill.text-bg-success.position-absolute.top-0.start-100.translate-middle
+                                                            i.bi.bi-check-circle.px-0
+
+                                                    else
+                                                        i.bi.bi-pencil-square.me-1
+                                                        | Continue My Response
+                                                        span.badge.rounded-pill.text-bg-warning.position-absolute.top-0.start-100.translate-middle
+                                                            i.bi.bi-question-circle
+
+
+
                                                 else
-                                                    i.fas.fa-edit.fa-fw.me-1
-                                                    | Continue My Response
-                                            else
-                                                i.fas.fa-edit.fa-fw.me-1
-                                                | Answer
+                                                    i.bi.bi-pencil-square.me-1
+                                                    | Answer
 
 

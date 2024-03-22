@@ -123,8 +123,6 @@ app.use(function(req, res, next){
     next();
 });
 
-app.use(permission());
-
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -171,17 +169,20 @@ passportClient.userProfile = async function (token, cb) {
 
 passport.use(passportClient);
 
+app.use(permission());
+
+
 // Setup intercode connection for routes
 
 app.use(async function(req, res, next){
     if (req.session.accessToken && req.user && !req.originalUrl.match(/^\/log(in|out)/) ){
         req.intercode = new Intercode(req.session.accessToken);
-        req.user.events = await req.intercode.getMemberEvents(req.user.intercode_id);
         next();
     } else {
         next();
     }
 });
+
 
 // Set common helpers for the view
 app.use(function(req, res, next){

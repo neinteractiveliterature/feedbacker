@@ -6,13 +6,60 @@
 
 .row.my-2
     .col
-        label.control-label(for="survey_base_url") Base Url
-        input.form-control#survey_base_url(type="text" placeholder="Intercode URL" name="survey[base_url]" value=survey.base_url required)
-        div.invalid-feedback Please choose a base Url
+        label.control-label(for="survey_base_url") Convention
+        select.form-select.select2#survey_base_url(
+            data-placeholder='Convention'
+            name='survey[base_url]'
+            required=true
+        )
+            option
+            each convention in conventions
+                if checkPermission('staff', `https://${convention.domain}`)
+                    option(value=`https://${convention.domain}` selected=survey.base_url===`https://${convention.domain}`)= convention.name
 
 .row.my-2
     .col
         +markdownEditor('Description', 'survey_description', 'survey[description]', 3, 100, survey.description, true)
+
+.row.my-2
+    .col
+        label.control-label.w-100.text-bg-light#css-heading(data-bs-toggle="collapse" data-bs-target="#css-container" aria-expanded="false" area-controls="css-container" style='cursor:pointer') Display Options
+            i.expand-text-shown.ms-4 (click to hide)
+            i.expand-text.ms-4 (click to show)
+            span.float-end.ps-2
+                i.bi.bi-chevron-up
+                i.bi.bi-chevron-down
+
+        #css-container.collapse(aria-labeledby="css-heading")
+            .row.my-2
+                .col-md-3
+                    label.control-label(for="survey_css") Custom CSS
+                .col
+                    +cssEditor('survey_css', 'survey[css]', 10, 300, survey.css)
+            .row.my-2
+                .col-md-3
+                    label.control-label(for="survey_brand_font") Logo/Brand Font
+                .col
+                    input.form-control#survey_brand_font(name="survey[brand_font]",placeholder='Anton' value=survey.brand_font)
+                    span.form-text A font name from
+                        a.mx-1(href='https://fonts.google.com' target="_blank") Google Fonts
+                            i.fas.fa-external-link.ms-2
+            .row.my-2
+                .col-md-3
+                    label.control-label(for="survey_header_font") Header Font
+                .col
+                    input.form-control#survey_header_font(name="survey[header_font]",placeholder='Montserrat' value=survey.header_font)
+                    span.form-text A font name from
+                        a.mx-1(href='https://fonts.google.com' target="_blank") Google Fonts
+                            i.fas.fa-external-link.ms-2
+            .row.my-2
+                .col-md-3
+                    label.control-label(for="survey_body_font") Body Font
+                .col
+                    input.form-control#survey_body_font(name="survey[body_font]",placeholder='Lato' value=survey.body_font)
+                    span.form-text A font name from
+                        a.mx-1(href='https://fonts.google.com' target="_blank") Google Fonts
+                            i.fas.fa-external-link.ms-2
 
 .row.my-2
     .col
@@ -24,8 +71,8 @@ if survey.id
         .col
             h4 Questions
                 a.btn.btn-sm.btn-outline-success.mx-2(href=`/question/new/${survey.id}`)
-                    span(class="fa fa-plus")
-                    |  New Question
+                    span.bi.bi-plus-lg.me-1
+                    | New Question
             .table-responsive
                 .col-sm-6.offset-sm-3.text-center#tableLoading
                     .spinner-border.m-5(role="status" style="width: 3rem; height: 3rem;")
@@ -70,13 +117,13 @@ if survey.id
                                         title='Delete Question'
                                         disabled=survey.published
                                     )
-                                        i.fas.fa-trash.fa-fw
+                                        i.bi.bi-trash3-fill
 .row.my-2
     .col
         button.btn.btn-primary.me-1(type="submit")= survey.id?'Update':'Create'
         if !survey.published && survey.id
             a.btn.btn-outline-primary.me-2(href=`/response/${survey.id}`)
-                fa.fas.fa-eye.me-1
+                i.bi.bi-eye-fill.me-1
                 | Preview Survey
 
         a.btn.btn-link(href="/survey") Cancel

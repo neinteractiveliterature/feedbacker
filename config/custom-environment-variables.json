@@ -13,8 +13,7 @@
             "url": "REDIS_URL",
             "tls": "REDIS_TLS"
         },
-        "cacheType": "CACHE_TYPE",
-        "fontAwesomeKit": "FONTAWESOME_KIT"
+        "cacheType": "CACHE_TYPE"
     },
     "auth": {
         "authorizationURL": "INTERCODE_URL",

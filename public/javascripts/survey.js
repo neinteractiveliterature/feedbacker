@@ -27,7 +27,7 @@ async function showEventFeedback(e){
     const responseId = $('#response-id').val();
     const base_url = $('#base-url').val();
     const disabled = $this.data('disabled');
-    $this.find('.feedback-icon').removeClass('fa-edit').addClass('fa-sync').addClass('fa-spin');
+    $this.find('.feedback-icon').removeClass('bi-pencil-square').addClass('bi-arrow-repeat').addClass('bi-spin');
 
     const result = await fetch(`/feedback/${responseId}/${eventId}/api`);
     const data = await result.json();
@@ -54,7 +54,7 @@ async function showEventFeedback(e){
 
     $modal.on('hidden.bs.modal', function(e){
         $modal.modal('dispose');
-        $this.find('.feedback-icon').removeClass('fa-sync').addClass('fa-edit').removeClass('fa-spin');
+        $this.find('.feedback-icon').removeClass('bi-arrow-repeat').addClass('bi-pencil-square').removeClass('bi-spin');
         $modal.find('.save-btn').show();
     });
 

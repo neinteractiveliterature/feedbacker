@@ -12,7 +12,11 @@ const tableFields = [
     'base_url',
     'created_by',
     'created',
-    'published'
+    'published',
+    'css',
+    'body_font',
+    'header_font',
+    'brand_font'
 ];
 
 const Survey = new Model('surveys', tableFields, {

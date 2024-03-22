@@ -13,7 +13,7 @@ block content
         input#response-complete(type='hidden' value=''+response.complete name='complete')
         if response.complete
             .badge.text-bg-success
-                i.fas.fa-check-circle.me-1
+                i.bi.bi-check-circle.me-1
                 | Completed
         if survey.description
             .row.my-2
@@ -34,16 +34,16 @@ block content
             .col-md
                 | Filling out survey as
                 span.px-3.py-1.rounded.ms-2.text-bg-primary#survey-user
-                    i.fas.fa-user.me-1
+                    i.bi.bi-person-fill.me-1
                     | #{activeUser.name}
                 span.px-3.py-1.rounded.ms-2.text-bg-success#survey-user-anon(style='display:none')
-                    i.fas.fa-user-secret.me-1
+                    i.bi.bi-incognito.me-1
                     i Anonymous
         .row.mb-2
             .col
                 .form-text If this an anonymous response, your name will not be displayed to convention staff.  You may still chose to share your name on comments you leave for GMs/event runners.
         for question in survey.questions
-            if !question.team_member_only || activeUser.events.length
+            if !question.team_member_only || userEvents.length
                 .row.my-3
                     .col
                         +questionDisplay(question)
@@ -54,26 +54,26 @@ block content
                     if survey.published
                         if !response.complete
                             button.btn.btn-secondary.me-2#survey-save(type="submit" name='response[action]' value='save' disabled=response.complete)
-                                i.far.fa-save.me-1
+                                i.bi.bi-floppy.me-1
                                 | Save Progress
                             button.btn.btn-primary.mx-2#survey-submit(type="submit" name='response[action]' value='submit' disabled=response.complete)
-                                i.fas.fa-envelope.me-1
+                                i.bi.bi-envelope.me-1
                                 | Submit Response
                         else
                             button.btn.btn-primary.me-2#survey-unsubmit(type="submit" name='response[action]' value='unsubmit' disabled=!response.complete)
-                                i.fas.fa-envelope-open-text.me-1
+                                i.bi.bi-envelope-paper.me-1
                                 | Reopen Response
                     else
                         button.btn.btn-secondary.me-2#survey-none(type="submit" name='response[action]' value='none' disabled=true)
-                            i.far.fa-save.me-1
+                            i.bi.bi-floppy.me-1
                             | Survey in Preview
                         if checkPermission('staff')
                             a.btn.btn-secondary.me-2(href=`/survey/${survey.id}/edit`)
-                                i.fas.fa-edit.fa-fw.me-1
+                                i.bi.bi-pencil-square.me-1
                                 | Edit Survey
 
                     a.btn.btn-link.mx-3(href="/")
-                        i.far.fa-times-circle.me-1
+                        i.bi.bi-x-circle.me-1
                         | Cancel
 
     +surveyModal()

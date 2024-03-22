@@ -154,7 +154,7 @@ mixin questionEvents()
                                 td= event.title
                                     if hasFeedback
                                         .badge.text-bg-success.ms-2.d-md-inline
-                                            i.fas.fa-check-circle.me-1
+                                            i.bi.bi-check-circle.me-1
                                             | Feedback Provided
                                 td.text-end
                                     .btn-group
@@ -181,10 +181,10 @@ mixin questionEvents()
                                                 data-disabled=disabled?'true':'false'
                                             )
                                                 if disabled
-                                                    i.fas.fa-eye.feedback-icon
+                                                    i.bi.bi-eye.feedback-icon
                                                     .d-none.d-lg-inline.ms-1 #{btnText}
                                                 else
-                                                    i.fas.fa-edit.feedback-icon
+                                                    i.bi.bi-pencil-square.feedback-icon
                                                     .d-none.d-lg-inline.ms-1 #{btnText}
 
                                         button.btn.btn-sm.btn-outline-danger.ms-1.feedback-remove.d-inline-block(
@@ -194,7 +194,7 @@ mixin questionEvents()
                                             title="Remove from List"
                                             disabled=disabled
                                         )
-                                            i.fas.fa-trash.fa-fw.feedback-icon
+                                            i.bi.bi-trash3-fill.feedback-icon
 
     .row.mb-2
         .col.px-2
@@ -205,7 +205,7 @@ mixin questionEvents()
                         option(value=event.id)= event.event_category.name + ': '+ event.title
 
                 button.btn.btn-outline-success.feedback-add( type="button")
-                    span.fa.fa-plus
+                    span.bi.bi-plus-lg
                     |  Add Event
 
 mixin surveyModal()

@@ -12,7 +12,7 @@ async function showSurvey(req, res, next){
 
     try {
         res.locals.survey = await req.models.survey.get(surveyId);
-        if (!( res.locals.survey.published || res.locals.checkPermission('Con Com'))){
+        if (!( res.locals.survey.published || res.locals.checkPermission('any', res.locals.survey.base_url))){
             req.flash('error', 'Survey is not published');
             return res.redirect('/survey');
         }
@@ -44,6 +44,8 @@ async function showSurvey(req, res, next){
             response.feedback = await req.models.feedback.find({response_id: response.id});
             delete req.session.responseData;
         }
+
+        res.locals.userEvents = await req.intercode.getMemberEvents(req.user.intercode_id, res.locals.survey.base_url);
 
         res.locals.response = response;
 
@@ -80,11 +82,11 @@ async function getSignupsApi(req, res, next){
         if (!survey){
             return res.status(404).json({success:false, error:'Not a valid survey'});
         }
-        if (!( survey.published || res.locals.checkPermission('Con Com'))){
+        if (!( survey.published || res.locals.checkPermission('any', survey.base_url))){
             return res.status(403).json({success:false, error:'Survey not published'});
         }
 
-        let signups = await req.intercode.getSignups(req.user.intercode_id);
+        let signups = await req.intercode.getSignups(req.user.intercode_id, survey.base_url);
         let userEvents = signups
             .filter(signup => {
                 if (signup.run.event.event_category.name === 'Volunteer event') { return false; }
@@ -116,7 +118,7 @@ async function getSignupsApi(req, res, next){
 
         userEvents = await async.map(userEvents, async (eventId) => {
             try{
-                const event = await req.intercode.getEvent(eventId);
+                const event = await req.intercode.getEvent(eventId, survey.base_url);
                 const feedback = await req.models.feedback.findOne({response_id: response.id, event_id: eventId});
 
                 return {
@@ -159,11 +161,11 @@ async function getEventsListApi(req, res, next){
         if (!survey){
             return res.status(404).json({success:false, error:'Not a valid survey'});
         }
-        if (!( survey.published || res.locals.checkPermission('Con Com'))){
+        if (!( survey.published || res.locals.checkPermission('any', survey.base_url))){
             return res.status(403).json({success:false, error:'Survey not published'});
         }
 
-        const events = (await req.intercode.getEvents()).filter(event => {
+        const events = (await req.intercode.getEvents(survey.base_url)).filter(event => {
             if (event.event_category.name === 'Volunteer event') { return false; }
             if (event.event_category.name === 'Con services') { return false; }
             for (const team_member of event.team_members){
