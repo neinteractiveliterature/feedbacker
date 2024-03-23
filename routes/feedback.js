@@ -189,6 +189,13 @@ async function addSignupApi(req, res, next){
             feedback.skipped = false;
             await req.models.feedback.update(feedback.id, feedback);
         } else {
+            const signups = (await req.intercode.getSignups(req.user.intercode_id, survey.base_url)).map(signup => {
+                return signup.run.event.id;
+            });
+
+            if (_.indexOf(signups, eventId) !== -1){
+                return res.json({success:true});
+            }
             await req.models.feedback.create({
                 response_id: responseId,
                 event_id: eventId

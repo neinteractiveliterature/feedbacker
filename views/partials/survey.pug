@@ -199,10 +199,13 @@ mixin questionEvents()
     .row.mb-2
         .col.px-2
             .input-group.eventPicker
+                - userEventList = _.pluck(userEvents, 'event');
                 select.form-select.select2.event-select(data-placeholder='Select an event to add')
                     option
                     for event in events
-                        option(value=event.id)= event.event_category.name + ': '+ event.title
+
+                        if !_.findWhere(userEventList, {id:event.id})
+                            option(value=event.id)= event.event_category.name + ': '+ event.title
 
                 button.btn.btn-outline-success.feedback-add( type="button")
                     span.bi.bi-plus-lg
