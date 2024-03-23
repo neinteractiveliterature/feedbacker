@@ -21,6 +21,8 @@
         "clientID": "INTERCODE_OAUTH_CLIENT_ID",
         "clientSecret": "INTERCODE_OAUTH_CLIENT_SECRET",
         "callbackURL": "INTERCODE_CALLBACK_URL"
+    },
+    "features": {
+        "multisiteAdmin": "MULTISITE_ADMIN"
     }
-
 }

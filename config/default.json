@@ -32,5 +32,8 @@
         "Website Team",
         "Survey Coordinator",
         "Survey Team"
-    ]
+    ],
+    "features": {
+        "multisiteAdmin": false
+    }
 }

@@ -1,7 +1,7 @@
 extends ../layout
 
 block content
-    if (checkPermission('staff'))
+    if (config.get('features.multisiteAdmin') && checkPermission('staff')) || checkPermission('none')
         a.btn.btn-outline-success.mb-2( href='/survey/new')
             span.bi.bi-plus-lg
             |  New Survey
@@ -28,7 +28,7 @@ block content
 
 
                                 .col-xxl.text-end
-                                    if survey.created_by === activeUser.id || checkPermission('staff', survey.base_url)
+                                    if survey.created_by === activeUser.id || checkPermission('none') || (config.get('features.multisiteAdmin') && checkPermission('staff', survey.base_url))
                                         a.btn.btn-sm.btn-outline-dark.float-start.mt-3.mt-xxl-0(href=`/survey/${survey.id}/edit`)
                                             i.bi.bi-pencil-square.me-1
                                             | Edit
