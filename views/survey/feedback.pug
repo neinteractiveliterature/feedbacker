@@ -3,8 +3,17 @@ extends ../layout
 block content
     .row
         .col
+            if _.keys(feedback).length
+                .float-end
+                    button.btn.btn-outline-primary.export-btn(url=`/survey/${survey.id}/feedback/export` href='#')
+                        i.bi.bi-download.me-1
+                        | Export as CSV
+            h2 Event feedback from #{survey.name}
             if !_.keys(feedback).length
                 p We're sorry, we have received no feedback for you yet, please check back later!
+
+    .row
+        .col
             each event,id in feedback
                 h3 #{event.event.event_category.name}: #{event.event.title}
 
@@ -12,4 +21,7 @@ block content
                     .card.my-2
                         .card-body
                             h5.card-title=item.user?item.user:Anonymous
-                            p= item.content
+                            p!= marked.parseInline(item.content, {breaks: true})
+
+append scripts
+    script(src='/javascripts/exporter.js')

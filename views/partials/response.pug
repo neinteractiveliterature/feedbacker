@@ -51,7 +51,7 @@ mixin questionSummaryText(question, responses)
                 li.list-group-item
                     if (!response.anonymous)
                         i=response.user.name
-                    p= question_response.value
+                    p!= marked.parseInline(question_response.value, {breaks: true})
 
 mixin questionSummaryBoolean(question, responses)
     -

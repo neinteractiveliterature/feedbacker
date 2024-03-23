@@ -2,8 +2,10 @@ const express = require('express');
 const csrf = require('csurf');
 const async = require('async');
 const _ = require('underscore');
+const moment = require('moment');
 const surveyHelper = require('../lib/survey-helper');
 const permission = require('../lib/permission');
+const stringify = require('csv-stringify-as-promised');
 
 async function list(req, res, next){
     res.locals.breadcrumbs = {
@@ -56,7 +58,53 @@ async function showFeedback(req, res, next){
             current: `Event feedback from ${survey.name}`
         };
         res.locals.title += ` - Feedback - ${survey.name}`;
-        res.render('survey/feedback', {pageTitle: `Event feedback from ${survey.name}`});
+        res.render('survey/feedback');
+
+    } catch(err){
+        next(err);
+    }
+}
+
+async function showFeedbackCsv(req, res, next){
+    const surveyId = req.params.id;
+    try{
+        const survey = await req.models.survey.get(surveyId);
+        if (!survey){
+            req.flash('error', 'Survey not found');
+            return res.redirect('/survey');
+        }
+        if (!survey.published){
+            req.flash('error', 'Survey not published');
+            return res.redirect('/survey');
+        }
+        const feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
+
+        const doc = [];
+        const header = [
+            'Event',
+            'Category',
+            'Name',
+            'Feedback'
+        ];
+        doc.push(header);
+        for (const eventId in feedback){
+            const event = feedback[eventId];
+            for (const item of event.feedback){
+                const row = [];
+                row.push(event.event.title);
+                row.push(event.event.event_category.name);
+                if (item.user){
+                    row.push(item.user);
+                } else {
+                    row.push('Anonymous');
+                }
+                row.push(item.content);
+                doc.push(row);
+            }
+        }
+        const output = await stringify(doc);
+        res.attachment(`${survey.name} - My Feedback.csv`);
+        res.end(output);
 
     } catch(err){
         next(err);
@@ -96,7 +144,142 @@ async function showResponses(req, res, next){
             current: `Responses from ${survey.name}`
         };
         res.locals.title += ` - Responses - ${survey.name}`;
-        res.render('survey/responses', {pageTitle: `Responses from ${survey.name}`});
+        res.render('survey/responses');
+
+    } catch(err){
+        next(err);
+    }
+}
+
+async function showResponsesCsv(req, res, next){
+    const surveyId = req.params.id;
+    try{
+        const survey = await req.models.survey.get(surveyId);
+        if (!survey){
+            req.flash('error', 'Survey not found');
+            return res.redirect('/survey');
+        }
+        if (!(survey.published || res.locals.checkPermission('any', survey.base_url))){
+            req.flash('error', 'Survey not published');
+            return res.redirect('/survey');
+        }
+        if (!res.locals.checkPermission('any', survey.base_url)){
+            req.flash('error', 'Not Authorized');
+            return res.redirect('/survey');
+        }
+        const responses = await surveyHelper.getResponses(survey, req.user, req.intercode);
+
+        const doc = [];
+        const header = [];
+        const questions = [];
+        header.push('Name');
+        header.push('Email');
+        header.push('Timestamp');
+        for (const question of survey.questions){
+            if (question.type !== 'events'){
+                header.push(question.name);
+                questions.push(question.id);
+            }
+        }
+        doc.push(header);
+        for (const response of responses){
+            const row = [];
+
+            if (response.user){
+                row.push(response.user.name);
+                row.push(response.user.email);
+            } else {
+                row.push('Anonymous');
+                row.push('');
+            }
+            row.push(moment(response.updated).format());
+            for (const questionId of questions){
+                const questionResponse = _.findWhere(response.responses, {question_id:questionId});
+                if (questionResponse){
+                    row.push(questionResponse.value);
+                } else {
+                    row.push('');
+                }
+            }
+            doc.push(row);
+        }
+
+        const output = await stringify(doc);
+        res.attachment(`${survey.name} - Responses.csv`);
+        res.end(output);
+
+    } catch(err){
+        next(err);
+    }
+}
+
+
+async function showResponseFeedbackCsv(req, res, next){
+    const surveyId = req.params.id;
+    try{
+        const survey = await req.models.survey.get(surveyId);
+        if (!survey){
+            req.flash('error', 'Survey not found');
+            return res.redirect('/survey');
+        }
+        if (!(survey.published || res.locals.checkPermission('any', survey.base_url))){
+            req.flash('error', 'Survey not published');
+            return res.redirect('/survey');
+        }
+        if (!res.locals.checkPermission('any', survey.base_url)){
+            req.flash('error', 'Not Authorized');
+            return res.redirect('/survey');
+        }
+        const responses = await surveyHelper.getResponses(survey, req.user, req.intercode);
+
+        let events = _.indexBy(await req.intercode.getEvents(survey.base_url), 'id');
+
+        const doc = [];
+        const header = [
+            'Name',
+            'Email',
+            'Timestamp',
+            'Event',
+            'Category',
+            'Recommend',
+            'Concom Feedback',
+            'GM Feedback',
+            'Anonymous'
+        ];
+        doc.push(header);
+        for (const response of responses){
+            for (const feedback of response.feedback){
+                if (feedback.skipped) { continue; }
+                const row = [];
+
+                if (response.user){
+                    row.push(response.user.name);
+                    row.push(response.user.email);
+                } else {
+                    row.push('Anonymous');
+                    row.push('');
+                }
+                row.push(moment(response.updated).format());
+                const event = events[feedback.event_id];
+                if (event) {
+                    row.push(event.title);
+                    row.push(event.event_category.name);
+                } else {
+                    row.push('Unknown');
+                    row.push('Unknown');
+                }
+                row.push(feedback.recommend);
+                row.push(feedback.concom);
+                row.push(feedback.gm);
+                row.push(feedback.gm_use_name?'No':'Yes');
+                doc.push(row);
+            }
+
+        }
+
+        const output = await stringify(doc);
+        res.attachment(`${survey.name} - Event Feedback.csv`);
+        res.end(output);
 
     } catch(err){
         next(err);
@@ -116,13 +299,13 @@ async function showNew(req, res, next){
         brand_font: null
     };
 
-     if (req.query.clone){
+    if (req.query.clone){
         const survey = await req.models.survey.get(req.query.clone);
         if(!survey){
             throw new Error('Invalid Survey');
         }
         delete survey.id;
-        survey.clone_id = Number(req.query.clone)
+        survey.clone_id = Number(req.query.clone);
         survey.published = false;
         res.locals.survey = survey;
         res.locals.breadcrumbs = {
@@ -308,7 +491,10 @@ router.get('/', list);
 router.get('/new', permission('staff'), csrf(), showNew);
 router.get('/:id', permission('staff'), csrf(), show);
 router.get('/:id/feedback',  csrf(), showFeedback);
+router.get('/:id/feedback/export', csrf(), showFeedbackCsv);
 router.get('/:id/responses', csrf(), showResponses);
+router.get('/:id/responses/export', csrf(), showResponsesCsv);
+router.get('/:id/responses/exportFeedback', csrf(), showResponseFeedbackCsv);
 router.get('/:id/edit', permission('staff'), csrf(), showEdit);
 router.post('/', permission('staff'), csrf(), create);
 router.put('/:id', permission('staff'), csrf(), update);

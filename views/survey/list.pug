@@ -45,23 +45,24 @@ block content
                                                 span.badge.rounded-pill.text-bg-primary.position-absolute.top-0.start-100.translate-middle=_.flatten(_.pluck(survey.feedback, 'feedback')).length
 
                                         if survey.published || checkPermission('any', survey.base_url)
-                                            a.btn.btn-sm.btn-outline-primary.mx-1.position-relative.mt-3.mt-xxl-0(href=`/response/${survey.id}`)
+                                            a.btn.btn-sm.btn-primary.mx-1.position-relative.mt-3.mt-xxl-0(href=`/response/${survey.id}`)
                                                 if !survey.published
                                                     i.bi.bi-eye-fill.me-1
                                                     | Preview
 
                                                 else if survey.response
                                                     if survey.response.complete
-                                                        i.bi.bi-eye-fill.me-1
+                                                        i.bi.bi-check-circle.me-1
                                                         | View My Response
-                                                        span.badge.rounded-pill.text-bg-success.position-absolute.top-0.start-100.translate-middle
-                                                            i.bi.bi-check-circle.px-0
+                                                        span.badge.rounded-circle.text-bg-success.position-absolute.top-0.start-100.translate-middle.p-2.border.border-light
+                                                            span.visually-hidden Complete
 
                                                     else
                                                         i.bi.bi-pencil-square.me-1
                                                         | Continue My Response
-                                                        span.badge.rounded-pill.text-bg-warning.position-absolute.top-0.start-100.translate-middle
-                                                            i.bi.bi-question-circle
+
+                                                        span.badge.text-bg-warning.position-absolute.top-0.start-100.translate-middle.p-2.rounded-circle.border.border-light
+                                                            span.visually-hidden In Progress
 
 
 

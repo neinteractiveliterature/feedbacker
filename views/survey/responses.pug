@@ -3,7 +3,22 @@ extends ../layout
 include ../partials/response
 
 block content
-    .row
+    .row.my-2
+        .col
+            .float-end
+                .dropdown
+                    button.btn.btn-outline-primary.dropdown-toggle(data-bs-toggle='dropdown' aria-expanded="false")
+
+                        i.bi.bi-download.me-1
+                        | Export as CSV
+                    ul.dropdown-menu
+                        li
+                            a.dropdown-item.export-btn(url=`/survey/${survey.id}/responses/export` href='#') Responses
+                        li
+                            a.dropdown-item.export-btn(url=`/survey/${survey.id}/responses/exportFeedback` href='#') Event Feedback
+
+            h2 Responses from #{survey.name}
+    .row.my-2
         .col
             .nav.nav-tabs#resultsTab(role='tablist')
                 button.nav-link.active#summary-tab(data-bs-toggle="tab" data-bs-target='#summary-tab-pane' type="button" role="tab" aria-controls="summary-tab-pane" aria-selected="true") Summary
@@ -18,3 +33,4 @@ block content
 
 append scripts
     script(src='/javascripts/responses.js')
+    script(src='/javascripts/exporter.js')
