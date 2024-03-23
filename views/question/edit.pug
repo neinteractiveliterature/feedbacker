@@ -6,21 +6,14 @@ block content
     .row
         .col
             h2 Edit Question
-            form.form.needs-validation(method="POST" action="/question/" + question.id novalidate)
+            form.form.needs-validation#questionForm(method="POST" action="/question/" + question.id novalidate)
                 input(type="hidden", name="_method",  value="PUT")
                 input(type="hidden", name='_csrf',value=csrfToken)
                 input(type="hidden", name='question[id]',value=question.id)
                 include ./_form.pug
 
 append scripts
+    script(src='/javascripts/templates/question/questionPreview.js')
+    script(src='/javascripts/templates/survey/signupsList.js')
     script(src='/javascripts/validator.js')
-    script.
-        $(function(){
-            $('.select2').select2({
-                theme:'bootstrap-5',
-                minimumResultsForSearch: 6,
-                width:'resolve'
-            });
-            $('[data-bs-toggle="tooltip"]').tooltip();
-        });
-
+    script(src='/javascripts/question.js')

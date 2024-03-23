@@ -76,6 +76,10 @@ if survey.id
                 a.btn.btn-sm.btn-outline-success.mx-2(href=`/question/new/${survey.id}`)
                     span.bi.bi-plus-lg.me-1
                     | New Question
+            if survey.published
+                .alert.text-bg-info
+                    i.bi.bi-exclamation-triangle-fill.me-1
+                    | Survey is published, unpublish to edit.
             .table-responsive
                 .col-sm-6.offset-sm-3.text-center#tableLoading
                     .spinner-border.m-5(role="status" style="width: 3rem; height: 3rem;")
@@ -89,19 +93,22 @@ if survey.id
                     thead
                         tr
                             th
-                            th.sort-handle
-                            th Order
+                            if !survey.published
+                                th.sort-handle
+                                th Order
                             th(data-priority="1") Name
                             th Question
                             th Type
-                            th
+                            if !survey.published
+                                th
 
                     tbody
                         for question in survey.questions
                             tr(class=!survey.published?'clickable-row':'', data-click-object='question' data-click-id=question.id)
                                 td.dtr-control
-                                td= question.id
-                                td= question.display_order
+                                if !survey.published
+                                    td= question.id
+                                    td= question.display_order
                                 td= question.name
                                     if question.required
                                         .badge.text-bg-danger.mx-1 Required
@@ -110,17 +117,17 @@ if survey.id
                                 td.text-truncate(style='max-width:200px')= question.question
                                 td= question.type
 
-
-                                td.text-end
-                                    button.btn.btn-outline-danger.btn-xs.delete-btn.mx-2(
-                                        role="button",
-                                        url=`/question/${question.id}`,
-                                        data-back=`/survey/${question.survey_id}/edit`
-                                        data-bs-toggle='tooltip'
-                                        title='Delete Question'
-                                        disabled=survey.published
-                                    )
-                                        i.bi.bi-trash3-fill
+                                if !survey.published
+                                    td.text-end
+                                        button.btn.btn-outline-danger.btn-xs.delete-btn.mx-2(
+                                            role="button",
+                                            url=`/question/${question.id}`,
+                                            data-back=`/survey/${question.survey_id}/edit`
+                                            data-bs-toggle='tooltip'
+                                            title='Delete Question'
+                                            disabled=survey.published
+                                        )
+                                            i.bi.bi-trash3-fill
 .row.my-2
     .col
         button.btn.btn-primary.me-2(type="submit")

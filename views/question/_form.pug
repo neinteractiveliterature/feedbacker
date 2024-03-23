@@ -9,7 +9,7 @@ input(type='hidden' name='question[survey_id]' value=question.survey_id)
 .row.my-2
     .col
         label.control-label(for="question_question") Question
-        input.form-control#question_name(type="text" placeholder="Question" name="question[question]" value=question.question required)
+        input.form-control#question_question(type="text" placeholder="Question" name="question[question]" value=question.question required)
         div.invalid-feedback Please choose a valid question
 
 .row.my-2
@@ -34,12 +34,38 @@ input(type='hidden' name='question[survey_id]' value=question.survey_id)
             label.form-check-label(for="question_team_member_only") Team Members Only
 .row.my-2
     .col
-        +markdownEditor('Description', 'question_description', 'question[description]', 3, 100, question.description, true)
+        +markdownEditor('Description / Additional Text', 'question_description', 'question[description]', 3, 100, question.description, true)
+
+#question-options
+    .row.question-options.question-text-options.my-2(style='display:none')
+        .col
+            label.control-label(for="question_config_rows") Rows
+            input.form-control#question_config_rows(type="number" name="question[config][rows]" value=question.config&&question.config.rows?question.config.rows:3)
+
+    .row.question-options.question-header-options.my-2(style='display:none')
+        .col
+            .form-check.form-switch
+                input.form-check-input#question_config_border(type="checkbox", name="question[config][border]" checked=question.config&&question.config.border?question.config.border:false)
+                label.form-check-label(for="question_config_border") Draw a border above the text?
+
+    .row.question-options.question-scale-options.question-dropdown-options.my-2(style='display:none')
+        .col
+            .question-options.question-scale-options(style='display:none')
+                label.control-label(for="question_config_options") Scale Options, Comma-seperated List
+            .question-options.question-dropdown-options(style='display:none')
+                label.control-label(for="question_config_options") Dropown Options, Comma-seperated
+
+            input.form-control#question_config_options(type="text" name="question[config][options]" placeholder='Option 1, Option 2, Option 3' value=question.config&&question.config.options?_.isArray(question.config.options)?question.config.options.join(', '):question.config.options:null)
+
+    .row.question-options.question-shorttext-options.question-dropdown-options.my-2(style='display:none')
+        .col
+            label.control-label(for="question_config_placeholder" ) Placeholder
+            input.form-control#question_config_placeholder(type="text" name="question[config][placeholder]" placeholder='What is your answer?' value=question.config&&question.config.placeholder?question.config.placeholder:null)
 
 .row.my-3
-    .col
-        label.control-label(for="question_config") Configuration
-        +jsonEditor('question_config', 'question[config]', 3, 200, question.config)
+    .col.border-top.pt-2
+        h4 Preview
+        #preview-container.border.rounded.p-3.bg-light
 
 .row.my-2
     .col

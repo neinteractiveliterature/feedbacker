@@ -29,7 +29,7 @@ async function showNew(req, res, next){
             ],
             current: 'New Question'
         };
-
+        res.locals.survey = survey;
         res.locals.csrfToken = req.csrfToken();
 
         if (_.has(req.session, 'questionData')){
@@ -59,6 +59,7 @@ async function showEdit(req, res, next){
             res.locals.question = req.session.questionData;
             delete req.session.questionData;
         }
+        res.locals.survey = survey;
         res.locals.breadcrumbs = {
             path: [
                 { url: '/', name: 'Home'},
@@ -84,7 +85,7 @@ async function create(req, res, next){
         }
     }
     try{
-        question.config = JSON.parse(question.config);
+        question.config = parseConfig(question);
         const questions = await req.models.question.find({survey_id:question.survey_id});
         const maxVal = _.max(_.pluck(questions, 'display_order'));
         question.display_order = _.isFinite(maxVal)?maxVal + 1:1;
@@ -111,8 +112,8 @@ async function update(req, res, next){
     }
 
     try {
+        question.config = parseConfig(question);
         const current = await req.models.question.get(id);
-        question.config = JSON.parse(question.config);
         await req.models.question.update(id, question);
         delete req.session.questionData;
         req.flash('success', 'Updated question ' + question.question);
@@ -123,6 +124,33 @@ async function update(req, res, next){
         return res.redirect(`/question/${id}/edit`);
 
     }
+}
+
+function parseConfig(question){
+    const config = {};
+    switch(question.type){
+        case 'shorttext':
+            if (_.has(question.config, 'placeholder')){
+                config.placeholder = question.config.placeholder;
+            }
+            break;
+        case 'text':
+            config.rows = question.config.rows?question.config.rows:3;
+            break;
+        case 'header':
+            config.border = _.has(question.config, 'border') && question.config.border;
+            break;
+        case 'dropdown':
+            config.options = _.has(question.config, 'options')?question.config.options.split(/\s*,\s*/):[];
+            if (_.has(question.config, 'placeholder')){
+                config.placeholder = question.config.placeholder;
+            }
+            break;
+        case 'scale':
+            config.options = _.has(question.config, 'options')?question.config.options.split(/\s*,\s*/):null;
+            break;
+    }
+    return config;
 }
 
 async function remove(req, res, next){

@@ -27,6 +27,7 @@ mixin questionShorttext(question)
         id='question-' + question.id,
         required=question.required
         disabled=response.complete
+        placeholder=question.config && question.config.placeholder
         )
     div.invalid-feedback Please choose a valid value for this item
     
@@ -80,7 +81,7 @@ mixin questionScale(question)
     - const value = getValue(question.id)
 
     div(id=`question-${question.id}`)
-        if (!questionrequired)
+        if (!question.required)
             .form-check.form-check-inline.mx-2.pe-2.border-end.d-block.d-md-inline-block
                 input.form-check-input(type="radio" name=`response[responses][q-${question.id}]` value=-1 id=`question-${question.id}-nr` checked=value===null || value===-1 disabled=response.complete)
                 label.form-check-label(for=`question-${question.id}-nr`) No Response
