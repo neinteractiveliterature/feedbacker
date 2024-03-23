@@ -21,7 +21,12 @@ async function list(req, res, next){
             survey.response = await req.models.response.findOne({survey_id: survey.id, user_id: req.user.id});
             survey.responses = await surveyHelper.getResponses(survey, req.user, req.intercode, true);
             survey.feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
-            survey.userEvents = await req.intercode.getMemberEvents(req.user.intercode_id, survey.base_url);
+            try{
+                survey.userEvents = await req.intercode.getMemberEvents(req.user.intercode_id, survey.base_url);
+            } catch(err){
+                survey.userEvents = [];
+                survey.noProfile = true;
+            }
 
             return survey;
         });

@@ -19,6 +19,13 @@ async function showSurvey(req, res, next){
         let response = await req.models.response.findOne({survey_id: surveyId, user_id: req.user.id});
 
 
+        let userEvents = null;
+        try{
+            userEvents = await req.intercode.getMemberEvents(req.user.intercode_id, res.locals.survey.base_url);
+        } catch(e){
+            req.flash('error', `No Convention Profile found for ${res.locals.survey.base_url}`);
+            return res.redirect('/survey');
+        }
 
         if (!response){
             const responseData = {
@@ -45,7 +52,7 @@ async function showSurvey(req, res, next){
             delete req.session.responseData;
         }
 
-        res.locals.userEvents = await req.intercode.getMemberEvents(req.user.intercode_id, res.locals.survey.base_url);
+        res.locals.userEvents = userEvents;
 
         res.locals.response = response;
 

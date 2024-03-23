@@ -20,7 +20,7 @@ const tableFields = [
 ];
 
 const Survey = new Model('surveys', tableFields, {
-    order: ['name'],
+    order: ['published desc', 'name'],
     validator: validate,
     postSelect: fill
 });

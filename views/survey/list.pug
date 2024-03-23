@@ -9,7 +9,7 @@ block content
         .col
             .list-group
                 for survey in surveys
-                    if survey.published || survey.created_by === activeUser.id || checkPermission('any', survey.base_url)
+                    if !survey.noProfile && (survey.published || survey.created_by === activeUser.id || checkPermission('any', survey.base_url))
                         .list-group-item.p-3
                             .row
                                 .col-xxl
