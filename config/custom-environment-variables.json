@@ -6,7 +6,6 @@
         "sessionType": "SESSION_TYPE",
         "sessionSecret": "SESSION_SECRET",
         "graphqlURL": "INTERCODE_GRAPHQL_URL",
-        "interconBaseURL": "INTERCON_BASE_URL",
         "redisURL": "REDISTOGO_URL",
         "secureOnly": "SECURE_ONLY",
         "redis": {

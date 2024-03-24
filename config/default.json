@@ -9,7 +9,6 @@
         "sessionType": "redis",
         "sessionSecret": "surveys",
         "graphqlURL": "graphqlURL",
-        "interconBaseURL": "interconBaseURL",
         "redis":{
             "url": false,
             "tls": false

@@ -9,7 +9,7 @@ async function showNew(req, res, next){
     const surveyId = req.params.surveyId;
     try{
         const survey = await req.models.survey.get(surveyId);
-        if (!survey){
+        if (!survey || survey.deleted){
             req.flash('error', 'Invalid Survey');
             return req.redirect('/');
         }
