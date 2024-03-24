@@ -16,7 +16,8 @@ const tableFields = [
     'css',
     'body_font',
     'header_font',
-    'brand_font'
+    'brand_font',
+    'deleted'
 ];
 
 const Survey = new Model('surveys', tableFields, {

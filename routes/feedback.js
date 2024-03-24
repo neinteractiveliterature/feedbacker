@@ -20,6 +20,9 @@ async function showApi(req, res, next){
             return res.status(403).json({success:false, error: 'not permitted'});
         }
         const survey = await req.models.survey.get(response.survey_id);
+        if (!survey || survey.deleted){
+            return res.status(404).json({success:false, error:'Not a valid survey'});
+        }
         if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
@@ -71,6 +74,9 @@ async function createApi(req, res, next){
             return res.status(401).json({success:false, error: 'no survey id specified'});
         }
         const survey = await req.models.survey.get(response.survey_id);
+        if (!survey || survey.deleted){
+            return res.status(404).json({success:false, error:'Not a valid survey'});
+        }
         if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
@@ -99,6 +105,9 @@ async function updateApi(req, res, next){
             return res.status(403).json({success:false, error: 'not permitted'});
         }
         const survey = await req.models.survey.get(response.survey_id);
+        if (!survey || survey.deleted){
+            return res.status(404).json({success:false, error:'Not a valid survey'});
+        }
         if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
@@ -137,6 +146,9 @@ async function removeSignupApi(req, res, next){
             return res.status(403).json({success:false, error: 'not permitted'});
         }
         const survey = await req.models.survey.get(response.survey_id);
+        if (!survey || survey.deleted){
+            return res.status(404).json({success:false, error:'Not a valid survey'});
+        }
         if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
@@ -176,6 +188,9 @@ async function addSignupApi(req, res, next){
             return res.status(403).json({success:false, error: 'not permitted'});
         }
         const survey = await req.models.survey.get(response.survey_id);
+        if (!survey || survey.deleted){
+            return res.status(404).json({success:false, error:'Not a valid survey'});
+        }
         if (!( survey.published || res.locals.checkPermission('staff'))){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }

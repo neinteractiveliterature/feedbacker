@@ -15,7 +15,7 @@ async function list(req, res, next){
         current: 'Surveys'
     };
     try {
-        const surveys = await req.models.survey.find({});
+        const surveys = await req.models.survey.find({deleted:false});
         res.locals.surveys = await async.map(surveys, async function(survey, cb){
             survey.convention = await req.intercode.getConvention(survey.base_url);
             survey.response = await req.models.response.findOne({survey_id: survey.id, user_id: req.user.id});
@@ -45,14 +45,13 @@ async function showFeedback(req, res, next){
     const surveyId = req.params.id;
     try{
         const survey = await req.models.survey.get(surveyId);
-        if (!survey){
-            req.flash('error', 'Survey not found');
+        try {
+            surveyValidator(survey, res, 'published');
+        } catch (err){
+            req.flash('error', err.message);
             return res.redirect('/survey');
         }
-        if (!survey.published){
-            req.flash('error', 'Survey not published');
-            return res.redirect('/survey');
-        }
+
         res.locals.feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
         res.locals.survey = survey;
         res.locals.breadcrumbs = {
@@ -74,12 +73,10 @@ async function showFeedbackCsv(req, res, next){
     const surveyId = req.params.id;
     try{
         const survey = await req.models.survey.get(surveyId);
-        if (!survey){
-            req.flash('error', 'Survey not found');
-            return res.redirect('/survey');
-        }
-        if (!survey.published){
-            req.flash('error', 'Survey not published');
+        try {
+            surveyValidator(survey, res, 'published');
+        } catch (err){
+            req.flash('error', err.message);
             return res.redirect('/survey');
         }
         const feedback = await surveyHelper.getFeedback(survey, req.user, req.intercode);
@@ -120,16 +117,10 @@ async function showResponses(req, res, next){
     const surveyId = req.params.id;
     try{
         const survey = await req.models.survey.get(surveyId);
-        if (!survey){
-            req.flash('error', 'Survey not found');
-            return res.redirect('/survey');
-        }
-        if (!(survey.published || res.locals.checkPermission('any', survey.base_url))){
-            req.flash('error', 'Survey not published');
-            return res.redirect('/survey');
-        }
-        if (!res.locals.checkPermission('any', survey.base_url)){
-            req.flash('error', 'Not Authorized');
+        try {
+            surveyValidator(survey, res, 'any');
+        } catch (err){
+            req.flash('error', err.message);
             return res.redirect('/survey');
         }
         res.locals.responses = await surveyHelper.getResponses(survey, req.user, req.intercode);
@@ -160,18 +151,13 @@ async function showResponsesCsv(req, res, next){
     const surveyId = req.params.id;
     try{
         const survey = await req.models.survey.get(surveyId);
-        if (!survey){
-            req.flash('error', 'Survey not found');
+        try {
+            surveyValidator(survey, res, 'any');
+        } catch (err){
+            req.flash('error', err.message);
             return res.redirect('/survey');
         }
-        if (!(survey.published || res.locals.checkPermission('any', survey.base_url))){
-            req.flash('error', 'Survey not published');
-            return res.redirect('/survey');
-        }
-        if (!res.locals.checkPermission('any', survey.base_url)){
-            req.flash('error', 'Not Authorized');
-            return res.redirect('/survey');
-        }
+
         const responses = await surveyHelper.getResponses(survey, req.user, req.intercode);
 
         const doc = [];
@@ -223,16 +209,10 @@ async function showResponseFeedbackCsv(req, res, next){
     const surveyId = req.params.id;
     try{
         const survey = await req.models.survey.get(surveyId);
-        if (!survey){
-            req.flash('error', 'Survey not found');
-            return res.redirect('/survey');
-        }
-        if (!(survey.published || res.locals.checkPermission('any', survey.base_url))){
-            req.flash('error', 'Survey not published');
-            return res.redirect('/survey');
-        }
-        if (!res.locals.checkPermission('any', survey.base_url)){
-            req.flash('error', 'Not Authorized');
+        try {
+            surveyValidator(survey, res, 'any');
+        } catch (err){
+            req.flash('error', err.message);
             return res.redirect('/survey');
         }
         const responses = await surveyHelper.getResponses(survey, req.user, req.intercode);
@@ -362,14 +342,10 @@ async function showEdit(req, res, next){
 
     try{
         const survey = await req.models.survey.get(id);
-
-        if (!survey){
-            req.flash('error', 'Invalid Survey');
-            return res.redirect('/survey');
-        }
-
-        if (!res.locals.checkPermission('staff', survey.base_url)){
-            req.flash('error', `Not staff on ${survey.base_url}`);
+        try {
+            surveyValidator(survey, res, 'staff');
+        } catch (err){
+            req.flash('error', err.message);
             return res.redirect('/survey');
         }
 
@@ -442,14 +418,13 @@ async function update(req, res, next){
 
     try{
         const current = await req.models.survey.get(id);
-        if (!current){
-            req.flash('error', 'Invalid Survey');
+        try {
+            surveyValidator(current, res, 'staff');
+        } catch (err){
+            req.flash('error', err.message);
             return res.redirect('/survey');
         }
-        if (!res.locals.checkPermission('staff', current.base_url)){
-            req.flash('error', `Not staff on ${current.base_url}`);
-            return res.redirect('/survey');
-        }
+
 
         for (const field of ['created', 'created_by']){
             survey[field] = current[field];
@@ -468,20 +443,45 @@ async function remove(req, res, next){
     const id = req.params.id;
     try{
         const current = await req.models.survey.get(id);
-        if (!res.locals.checkPermission('staff', current.base_url)){
-            req.flash('error', 'Permission Denied to Delete Survey');
+        try {
+            surveyValidator(current, res, 'staff');
+        } catch (err){
+            req.flash('error', err.message);
             return res.redirect('/survey');
         }
-        if (!current){
-            req.flash('error', 'Invalid Survey');
-            return res.redirect('/survey');
-        }
-        await req.models.survey.delete(id);
+
+        current.deleted = true;
+        await req.models.survey.update(id, current);
         req.flash('success', `Removed Survey: ${current.name}`);
         res.redirect('/survey');
     } catch(err){
         next(err);
     }
+}
+
+function surveyValidator(survey, res, permission){
+    if (!survey){
+        throw new Error('Survey not found');
+    }
+    if (survey.deleted){
+        throw new Error('Survey has been deleted');
+    }
+    if (permission === 'published'){
+        if (!(survey.published || res.locals.checkPermission('any', survey.base_url))){
+            throw new Error('Survey not published');
+        }
+
+    } else if (permission === 'any'){
+
+        if (!res.locals.checkPermission('any', survey.base_url)){
+            throw new Error('Not Authorized');
+        }
+    } else if (permission === 'staff'){
+        if (!res.locals.checkPermission('staff', survey.base_url)){
+            throw new Error(`Not staff on ${survey.base_url}`);
+        }
+    }
+    return;
 }
 
 const router = express.Router();

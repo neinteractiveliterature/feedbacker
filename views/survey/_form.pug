@@ -73,13 +73,15 @@ if survey.id
     .row.my-2
         .col
             h4 Questions
-                a.btn.btn-sm.btn-outline-success.mx-2(href=`/question/new/${survey.id}`)
-                    span.bi.bi-plus-lg.me-1
-                    | New Question
+                if !survey.published
+                    a.btn.btn-sm.btn-outline-success.mx-2(href=`/question/new/${survey.id}`)
+                        span.bi.bi-plus-lg.me-1
+                        | New Question
             if survey.published
                 .alert.text-bg-info
                     i.bi.bi-exclamation-triangle-fill.me-1
                     | Survey is published, unpublish to edit.
+
             .table-responsive
                 .col-sm-6.offset-sm-3.text-center#tableLoading
                     .spinner-border.m-5(role="status" style="width: 3rem; height: 3rem;")

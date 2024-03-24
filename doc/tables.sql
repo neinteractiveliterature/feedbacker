@@ -18,6 +18,7 @@ create table surveys (
     body_font varchar(255),
     header_font varchar(255),
     brand_font varchar(255),
+    deleted boolean default false,
     primary key (id)
 );
 

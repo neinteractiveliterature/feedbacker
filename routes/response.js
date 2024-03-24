@@ -12,6 +12,10 @@ async function showSurvey(req, res, next){
 
     try {
         res.locals.survey = await req.models.survey.get(surveyId);
+        if (res.locals.survey.deleted){
+            req.flash('error', 'Survey has been deleted');
+            return res.redirect('/survey');
+        }
         if (!( res.locals.survey.published || res.locals.checkPermission('any', res.locals.survey.base_url))){
             req.flash('error', 'Survey is not published');
             return res.redirect('/survey');
@@ -86,7 +90,7 @@ async function getSignupsApi(req, res, next){
         }
 
         const survey = await req.models.survey.get(response.survey_id);
-        if (!survey){
+        if (!survey || survey.deleted){
             return res.status(404).json({success:false, error:'Not a valid survey'});
         }
         if (!( survey.published || res.locals.checkPermission('any', survey.base_url))){
@@ -165,7 +169,7 @@ async function getEventsListApi(req, res, next){
         }
 
         const survey = await req.models.survey.get(response.survey_id);
-        if (!survey){
+        if (!survey || survey.deleted){
             return res.status(404).json({success:false, error:'Not a valid survey'});
         }
         if (!( survey.published || res.locals.checkPermission('any', survey.base_url))){
@@ -215,6 +219,9 @@ async function saveResponse(req, res, next){
             return res.status(404).json({success:false, error:'Not a valid response'});
         }
         const survey = await req.models.survey.get(current.survey_id);
+        if (!survey || survey.deleted){
+            return res.status(404).json({success:false, error:'Not a valid survey'});
+        }
         if (!survey.published){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
@@ -243,7 +250,6 @@ async function saveResponse(req, res, next){
                 } else {
                     await req.models.question_response.create(question_response);
                 }
-
             }
         }
         current.updated = new Date();
@@ -266,7 +272,6 @@ async function saveResponse(req, res, next){
         } else {
             res.redirect('/survey');
         }
-
 
     } catch(err){
         req.flash('error', err.toString());
