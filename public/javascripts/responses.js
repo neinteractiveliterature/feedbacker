@@ -59,6 +59,7 @@ function showSummaryResults(e){
 
 function showPrevQuestionResponse(e){
     e.preventDefault();
+    $(this).blur();
     const $responseDiv = $('#question-responses-container');
     const $activeResponse = $responseDiv.find('.question-response:visible');
     const $prevDiv = $activeResponse.prev();
@@ -70,6 +71,7 @@ function showPrevQuestionResponse(e){
 
 function showNextQuestionResponse(e){
     e.preventDefault();
+    $(this).blur();
     const $responseDiv = $('#question-responses-container');
     const $activeResponse = $responseDiv.find('.question-response:visible');
     const $nextDiv = $activeResponse.next();
@@ -118,6 +120,7 @@ function showIndividualResults(e){
 
 function showPrevIndividualResponse(e){
     e.preventDefault();
+    $(this).blur();
     const $responseDiv = $('#individual-responses-container');
     const $activeResponse = $responseDiv.find('.individual-response:visible');
     const $prevDiv = $activeResponse.prev();
@@ -129,6 +132,7 @@ function showPrevIndividualResponse(e){
 
 function showNextIndividualResponse(e){
     e.preventDefault();
+    $(this).blur();
     const $responseDiv = $('#individual-responses-container');
     const $activeResponse = $responseDiv.find('.individual-response:visible');
     const $nextDiv = $activeResponse.next();
