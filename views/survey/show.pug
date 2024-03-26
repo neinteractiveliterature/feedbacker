@@ -23,6 +23,15 @@ block content
 
         .row.mt-2
             .col-md
+                //label.form-label.pe-2 Fill out survey as:
+                //.form-check.form-check-inline
+                    input.form-check-input.response-anon#response-anon-false(type='radio' name='response[anonymous]' checked=!response.anonymous disabled=response.complete value='name')
+                    label.form-check-label(for='response-anon-false') #{activeUser.name}
+                //.form-check.form-check-inline
+                    input.form-check-input.response-anon#response-anon-true(type='radio' name='response[anonymous]' checked=response.anonymous disabled=response.complete value='anonymous')
+                    label.form-check-label(for='response-anon-true')
+                        i Anonymous
+
                 .form-check.form-switch
                     input.form-check-input#response-anonymous(
                         type="checkbox"
@@ -33,12 +42,13 @@ block content
                     label.form-check-label(for="response-anonymous") Anonymous Response
             .col-md
                 | Filling out survey as
-                span.px-3.py-1.rounded.ms-2.text-bg-primary#survey-user
+                span.px-3.py-1.rounded.ms-2.text-bg-primary.survey-user
                     i.bi.bi-person-fill.me-1
                     | #{activeUser.name}
-                span.px-3.py-1.rounded.ms-2.text-bg-success#survey-user-anon(style='display:none')
+                span.px-3.py-1.rounded.ms-2.text-bg-success.survey-user-anon(style='display:none')
                     i.bi.bi-incognito.me-1
                     i Anonymous
+
         .row.mb-2
             .col
                 .form-text If this an anonymous response, your name will not be displayed to convention staff.  You may still chose to share your name on comments you leave for GMs/event runners.
@@ -58,7 +68,10 @@ block content
                                 | Save Progress
                             button.btn.btn-primary.mx-2#survey-submit(type="submit" name='response[action]' value='submit' disabled=response.complete)
                                 i.bi.bi-envelope.me-1
-                                | Submit Response
+                                | Submit Response as
+                                span.survey-user.ms-1 #{activeUser.name}
+                                span.survey-user-anon.ms-1(style='display:none')
+                                    i Anonymous
                         else
                             button.btn.btn-primary.me-2#survey-unsubmit(type="submit" name='response[action]' value='unsubmit' disabled=!response.complete)
                                 i.bi.bi-envelope-paper.me-1

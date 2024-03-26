@@ -11,6 +11,8 @@ $(function () {
 
     $('#surveyModal').find('.save-btn').on('click', submitFeedbackModal);
     $('#response-anonymous').on('change', displaySurveyUserName).trigger('change');
+    $('.response-anon').on('change', displaySurveyUserNameRadio);
+    $('.response-anon:checked').trigger('change');
     if ($('#questionEvents').length){ loadSignups();}
     $('#deleteSurveyBtn').confirmation({'title':'Delete this Survey?'}).on('click', deleteSurvey);
 });
@@ -183,11 +185,22 @@ function displaySurveyUserName(e){
     const $this = $(this);
     const checked = $this.is(':checked');
     if (checked){
-        $('#survey-user').hide();
-        $('#survey-user-anon').show();
+        $('.survey-user').hide();
+        $('.survey-user-anon').show();
     } else {
-        $('#survey-user').show();
-        $('#survey-user-anon').hide();
+        $('.survey-user').show();
+        $('.survey-user-anon').hide();
+    }
+}
+function displaySurveyUserNameRadio(e){
+    const $this = $(this);
+    const anon = $this.val();
+    if (anon === 'anonymous'){
+        $('.survey-user').hide();
+        $('.survey-user-anon').show();
+    } else {
+        $('.survey-user').show();
+        $('.survey-user-anon').hide();
     }
 }
 
