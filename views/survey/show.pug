@@ -68,10 +68,10 @@ block content
                                 | Save Progress
                             button.btn.btn-primary.mx-2#survey-submit(type="submit" name='response[action]' value='submit' disabled=response.complete)
                                 i.bi.bi-envelope.me-1
-                                | Submit Response as
-                                span.survey-user.ms-1 #{activeUser.name}
+                                | Submit Response
+                                span.survey-user.ms-1 as #{activeUser.name}
                                 span.survey-user-anon.ms-1(style='display:none')
-                                    i Anonymous
+                                    | Anonymously
                         else
                             button.btn.btn-primary.me-2#survey-unsubmit(type="submit" name='response[action]' value='unsubmit' disabled=!response.complete)
                                 i.bi.bi-envelope-paper.me-1
