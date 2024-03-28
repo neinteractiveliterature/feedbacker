@@ -58,7 +58,7 @@ block content
                     .col
                         +questionDisplay(question)
 
-        nav.navbar.sticky-bottom.bg-light.border-body.rounded.border.mx-2.mx-md-4
+        nav.navbar.sticky-bottom.bg-light.border-body.rounded.border.mx-md-4
             .container-fluid.px-2.py-1
                 .save-buttons
                     if survey.published
@@ -68,7 +68,8 @@ block content
                                 | Save Progress
                             button.btn.btn-primary.mx-2#survey-submit(type="submit" name='response[action]' value='submit' disabled=response.complete)
                                 i.bi.bi-envelope.me-1
-                                | Submit Response
+                                | Submit
+                                span.ms-1.d-none.d-md-inline Response
                                 span.d-none.d-md-inline
                                     span.survey-user.ms-1 as #{activeUser.name}
                                     span.survey-user-anon.ms-1(style='display:none')
@@ -86,7 +87,7 @@ block content
                                 i.bi.bi-pencil-square.me-1
                                 | Edit Survey
 
-                    a.btn.btn-link.mx-3(href="/")
+                    a.btn.btn-link.ms-1.ms-md-3(href="/")
                         i.bi.bi-x-circle.me-1
                         | Cancel
 
