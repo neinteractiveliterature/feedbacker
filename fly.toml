@@ -20,6 +20,7 @@ primary_region = 'bos'
   SESSION_TYPE="postgresql"
   CACHE_TYPE="local"
   TZ="America/New_York"
+  MULTISITE_ADMIN=1
 
 [http_service]
   internal_port = 8080
