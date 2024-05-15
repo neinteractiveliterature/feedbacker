@@ -16,7 +16,7 @@ if (backto)
 
         | #{event.event_category.team_member_name}(s): #{team_members.join(', ')}
     .col.text-end
-        a.btn.btn-outline-primary(target='_blank' href=`${base_url}/events/${feedback.event_id}`) View on Intercon Site
+        a.btn.btn-outline-primary(target='_blank' href=`${base_url}/events/${feedback.event_id}`) View on Convention Site
             i.bi.bi-box-arrow-up-right.ms-2
 
 
@@ -34,13 +34,13 @@ if (backto)
 
 .row.my-2
     .col
-        label.control-label(for="feedback_concom") Feedback for Intercon Staff Only
+        label.control-label(for="feedback_concom") Feedback for Convention Staff Only
         textarea.form-control(name="feedback[concom]",id="feedback_concom",rows=5 disabled=disabled)
             = feedback.concom
 
 .row.mt-2.mb-1
     .col
-        label.control-label(for="feedback_concom") Feedback for #{event.event_category.team_member_name}(s) (And Intercon Staff)
+        label.control-label(for="feedback_concom") Feedback for #{event.event_category.team_member_name}(s) (And Convention Staff)
         textarea.form-control(name="feedback[gm]",id="feedback_gm",rows=5, disabled=disabled)
             = feedback.gm
 

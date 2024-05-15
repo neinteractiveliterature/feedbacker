@@ -259,7 +259,7 @@ mixin eventSummary(feedback, event)
             if spWidth
                 | Strong Yes: #{recommend['5']} (#{spWidth}%)
 
-    h5 Feedback for Intercon Staff
+    h5 Feedback for Convention Staff
     ul.list-group.my-2.ms-md-4
         for entry of feedback
             if entry.concom && entry.concom !== ''
@@ -448,7 +448,7 @@ mixin questionIndividualEvents(question, response)
                                     when 5
                                         .badge.text-bg-success.ms-2 Strong Yes
 
-                            h5 Feedback for Intercon Staff
+                            h5 Feedback for Convention Staff
                             .card.text-bg-light.ms-md-4.mb-2
                                 .card-body.p-2
                                     if feedback.concom
