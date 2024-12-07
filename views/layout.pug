@@ -12,7 +12,7 @@ html(lang="en")
             else
                 include ./partials/layout/mini_menu
             .spacer(style="height: 70px")
-            .container.bg-white.p-2.flex-grow-1(style= activeUser ? 'padding-top: 5.5rem;': '' )
+            .container.bg-white.p-2.flex-grow-1#mainContent(style= activeUser ? 'padding-top: 5.5rem;': '' )
                 if breadcrumbs
                     if wideMain
                         .container-fluid
@@ -38,13 +38,13 @@ html(lang="en")
                 include ./partials/layout/messages
 
                 if wideMain
-                    main.container-fluid#mainContent(role="main")
+                    main.container-fluid(role="main")
                         block content
                 else if fullHeightMain
-                    main.container.h-10#mainContent(role="main")
+                    main.container.h-10(role="main")
                         block content
                 else
-                    main.container#mainContent(role="main")
+                    main.container(role="main")
                         block content
 
                 include ./partials/layout/footer
