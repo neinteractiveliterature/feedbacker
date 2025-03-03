@@ -25,6 +25,9 @@ block content
                                             .badge.text-bg-success.ms-1 Active
                                         else
                                             .badge.text-bg-warning.ms-1 Unpublished
+                                    br
+                                    .span.ms-2
+                                        +datespan(survey.convention.starts_at, survey.convention.ends_at)
 
 
                                 .col-xxl.text-end
@@ -71,3 +74,25 @@ block content
                                                     | Answer
 
 
+
+mixin datespan(start, end)
+    -
+        const startM = moment(start);
+
+        const endM = moment(end);
+        let dateStr = '';
+
+        if (startM.format('YYYY-MM-DD') === endM.format('YYYY-MM-DD')){
+            dateStr = startM.format('ll');
+
+        } else if (startM.format('YYYY-MM') === endM.format('YYYY-MM')){
+            dateStr = `${startM.format('MMM D')} - ${endM.format('D, YYYY')}`;
+
+        } else if (startM.format('YYYY') === endM.format('YYYY')){
+            dateStr = `${startM.format('MMM D')} - ${endM.format('MMM D, YYYY')}` ;
+
+        } else {
+            dateStr = `${startM.format('MMM D YYYY')} - ${endM.format('MMM D, YYYY')}` ;
+
+        }
+    =dateStr

@@ -30,11 +30,16 @@ async function list(req, res, next){
 
             return survey;
         });
+        res.locals.surveys = res.locals.surveys.sort(conventionSorter);
         res.locals.title += ' - Survey List';
         res.render('survey/list', { pageTitle: 'Surveys' });
     } catch (err){
         next(err);
     }
+}
+
+function conventionSorter(a, b){
+    return new Date(b.convention.starts_at) - new Date(a.convention.starts_at);
 }
 
 async function show(req, res, next){
