@@ -102,6 +102,7 @@ async function getSignupsApi(req, res, next){
             .filter(signup => {
                 if (signup.run.event.event_category.name === 'Volunteer event') { return false; }
                 if (signup.run.event.event_category.name === 'Con services') { return false; }
+                if (signup.run.event.event_category.name === 'Hotel services') { return false; }
                 if (req.user.id === response.user_id){
                     for (const team_member of signup.run.event.team_members){
                         if (team_member.display_team_member && Number(team_member.user_con_profile.user_id) === req.user.intercode_id){
@@ -179,6 +180,7 @@ async function getEventsListApi(req, res, next){
         const events = (await req.intercode.getEvents(survey.base_url)).filter(event => {
             if (event.event_category.name === 'Volunteer event') { return false; }
             if (event.event_category.name === 'Con services') { return false; }
+            if (event.event_category.name === 'Hotel services') { return false; }
             for (const team_member of event.team_members){
                 if (team_member.display_team_member && Number(team_member.user_con_profile.user_id) === req.user.intercode_id){
                     return false;

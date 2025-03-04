@@ -133,6 +133,7 @@ async function showResponses(req, res, next){
         const events = (await req.intercode.getEvents(survey.base_url)).filter(event => {
             if (event.event_category.name === 'Volunteer event') { return false; }
             if (event.event_category.name === 'Con services') { return false; }
+            if (event.event_category.name === 'Hotel services') { return false; }
             return true;
         });
         res.locals.events = _.indexBy(events, 'id');

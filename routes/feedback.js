@@ -204,9 +204,10 @@ async function addSignupApi(req, res, next){
             feedback.skipped = false;
             await req.models.feedback.update(feedback.id, feedback);
         } else {
-            const signups = (await req.intercode.getSignups(req.user.intercode_id, survey.base_url)).map(signup => {
-                return signup.run.event.id;
-            });
+            const signups = (await req.intercode.getSignups(req.user.intercode_id, survey.base_url))
+                .filter(signup => {return signup.state !== 'withdrawn';})
+                .filter(signup => {return signup.state !== 'waitlisted';})
+                .map(signup => { return signup.run.event.id; })
 
             if (_.indexOf(signups, eventId) !== -1){
                 return res.json({success:true});
