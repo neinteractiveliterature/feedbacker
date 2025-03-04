@@ -81,6 +81,13 @@ async function createApi(req, res, next){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
         feedback.recommend = Number(feedback.recommend);
+
+        for(const field of ['gm_use_name']){
+            if (!_.has(feedback, field)){
+                feedback[field] = false;
+            }
+        }
+
         await req.models.feedback.create(feedback);
         delete req.session.feedbackData;
         res.json({success:true});
@@ -112,6 +119,13 @@ async function updateApi(req, res, next){
             return res.status(403).json({success:false, error: 'Survey is not published'});
         }
         feedback.recommend = Number(feedback.recommend);
+
+
+        for(const field of ['gm_use_name']){
+            if (!_.has(feedback, field)){
+                feedback[field] = false;
+            }
+        }
 
         feedback.response_id = current.response_id;
         await req.models.feedback.update(feedbackId, feedback);
