@@ -452,7 +452,7 @@ mixin questionIndividualEvents(question, response)
                             .card.text-bg-light.ms-md-4.mb-2
                                 .card-body.p-2
                                     if feedback.concom
-                                        =feedback.concom
+                                        =marked.parseInline(feedback.concom, {breaks:true})
                                     else
                                         i None Provided
 
@@ -461,7 +461,7 @@ mixin questionIndividualEvents(question, response)
                             .card.text-bg-light.ms-md-4.mb-2
                                 .card-body.p-2
                                     if feedback.gm
-                                        = feedback.gm
+                                        = marked.parseInline(feedback.gm, {breaks:true})
                                     else
                                         i None Provided
 
