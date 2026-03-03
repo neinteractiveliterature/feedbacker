@@ -87,8 +87,13 @@ async function createApi(req, res, next){
                 feedback[field] = false;
             }
         }
+        const current = await req.models.feedback.findOne({response_id:response.id, event_id:feedback.event_id});
+        if (current){
+            await req.models.feedback.update( current.id, feedback);
+        } else {
+            await req.models.feedback.create(feedback);
+        }
 
-        await req.models.feedback.create(feedback);
         delete req.session.feedbackData;
         res.json({success:true});
     } catch(err){
