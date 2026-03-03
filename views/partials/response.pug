@@ -263,14 +263,14 @@ mixin eventSummary(feedback, event)
     ul.list-group.my-2.ms-md-4
         for entry of feedback
             if entry.concom && entry.concom !== ''
-                li.list-group-item.text-bg-light= marked.parseInline(entry.concom, {breaks:true})
+                li.list-group-item.text-bg-light!= marked.parseInline(entry.concom, {breaks:true})
 
 
     h5 Feedback for #{event.event_category.team_member_name}(s)
     ul.list-group.my-2.ms-md-4
         for entry of feedback
             if entry.gm && entry.gm !== ''
-                li.list-group-item.text-bg-light= marked.parseInline(entry.gm, {breaks:true})
+                li.list-group-item.text-bg-light!= marked.parseInline(entry.gm, {breaks:true})
 
 mixin responseIndividual(survey, responses)
     .row.my-3
@@ -452,7 +452,7 @@ mixin questionIndividualEvents(question, response)
                             .card.text-bg-light.ms-md-4.mb-2
                                 .card-body.p-2
                                     if feedback.concom
-                                        =marked.parseInline(feedback.concom, {breaks:true})
+                                        !=marked.parseInline(feedback.concom, {breaks:true})
                                     else
                                         i None Provided
 
@@ -461,7 +461,7 @@ mixin questionIndividualEvents(question, response)
                             .card.text-bg-light.ms-md-4.mb-2
                                 .card-body.p-2
                                     if feedback.gm
-                                        = marked.parseInline(feedback.gm, {breaks:true})
+                                        != marked.parseInline(feedback.gm, {breaks:true})
                                     else
                                         i None Provided
 
