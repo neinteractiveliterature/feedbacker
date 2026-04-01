@@ -1,7 +1,10 @@
 {
     "app": {
         "dbURL": "DATABASE_URL",
-        "dbSSL": "DATABASE_SSL",
+        "dbSSL": {
+            "__name": "DATABASE_SSL",
+            "__format": "number"
+        },
         "dbPoolSize": "DATABASE_POOL_SIZE",
         "sessionType": "SESSION_TYPE",
         "sessionSecret": "SESSION_SECRET",
